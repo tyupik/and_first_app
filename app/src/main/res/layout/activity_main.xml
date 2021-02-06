@@ -87,9 +87,9 @@
 
     <TextView
         android:id="@+id/likeCount"
-        android:layout_width="47dp"
+        android:layout_width="51dp"
         android:layout_height="wrap_content"
-        android:text="999M"
+        android:text=""
         android:textSize="15sp"
         android:layout_marginStart="5dp"
         app:layout_constraintTop_toTopOf="@id/like"
@@ -108,9 +108,9 @@
 
     <TextView
         android:id="@+id/shareCount"
-        android:layout_width="47dp"
+        android:layout_width="51dp"
         android:layout_height="wrap_content"
-        android:text="500"
+        android:text=""
         android:textSize="15sp"
         android:layout_marginStart="5dp"
         app:layout_constraintTop_toTopOf="@id/like"
@@ -119,10 +119,10 @@
 
     <TextView
         android:id="@+id/numbersOfView"
-        android:layout_width="40dp"
+        android:layout_width="46dp"
         android:textSize="15sp"
         android:layout_height="wrap_content"
-        android:text="999K"
+        android:text="999,9K"
         android:layout_marginEnd="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/like"
