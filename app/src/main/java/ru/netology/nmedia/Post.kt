@@ -8,7 +8,7 @@ data class Post(
     val authorAvatar: ImageView? = null,
     val content: String,
     val published: String,
-    val likeByMe: Boolean = false,
+    val likedByMe: Boolean = false,
     val likeCount: Int = 0,
     val shareCount: Int = 0
 )

@@ -3,7 +3,8 @@ package ru.netology.nmedia
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.viewModels
-import kotlin.math.floor
+import androidx.recyclerview.widget.DividerItemDecoration
+import ru.netology.nmedia.adapter.PostAdapter
 import ru.netology.nmedia.databinding.ActivityMainBinding
 import ru.netology.nmedia.viewmodel.PostViewModel
 
@@ -16,36 +17,13 @@ class MainActivity : AppCompatActivity() {
 
         val viewModel: PostViewModel by viewModels()
 
-        with(binding) {
+        val adapter = PostAdapter(
+            onPostLiked = { viewModel.likeById(it.id) },
+            onPostShared = { viewModel.shareById(it.id) }
+        )
 
-            like.setOnClickListener {
-                viewModel.like()
-            }
-            share.setOnClickListener {
-                viewModel.share()
-            }
-            viewModel.data.observe(this@MainActivity) { post ->
-                authorTv.text = post.author
-                publishedTv.text = post.published
-                textTv.text = post.content
-                like.setImageResource(
-                    if (post.likeByMe) R.drawable.like_red else R.drawable.empty_like
-                )
-                likeCount.text = setRoundCount(post.likeCount)
-                shareCount.text = setRoundCount(post.shareCount)
-            }
-
-        }
-    }
-
-    private fun setRoundCount(value: Int): String {
-        return when (value) {
-            0 -> ""
-            in 1..999 -> value.toString()
-            in 1000..1099 -> "1K"
-            in 1100..9999 -> (floor(value.toDouble() / 1000 * 10f) / 10f).toString() + "K"
-            in 10000..999_999 -> floor(value.toDouble() / 1000).toInt().toString() + "K"
-            else -> (floor(value.toDouble() / 1_000_000 * 10f) / 10f).toString() + "M"
-        }
+        binding.root.adapter = adapter
+        binding.root.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
+        viewModel.data.observe(this, adapter::submitList)
     }
 }
