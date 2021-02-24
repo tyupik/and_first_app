@@ -2,9 +2,12 @@ package ru.netology.nmedia
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
+import ru.netology.nmedia.AndroidUtils.hideKeyboard
 import ru.netology.nmedia.adapter.PostAdapter
+import ru.netology.nmedia.adapter.PostAdapterClickListener
 import ru.netology.nmedia.databinding.ActivityMainBinding
 import ru.netology.nmedia.viewmodel.PostViewModel
 
@@ -18,12 +21,44 @@ class MainActivity : AppCompatActivity() {
         val viewModel: PostViewModel by viewModels()
 
         val adapter = PostAdapter(
-            onPostLiked = { viewModel.likeById(it.id) },
-            onPostShared = { viewModel.shareById(it.id) }
+            object: PostAdapterClickListener {
+                override fun onEditClicked(post: Post) {
+                    viewModel.edit(post)
+                }
+
+                override fun onRemoveClicked(post: Post) {
+                    viewModel.removeById(post.id)
+                }
+
+                override fun onLikeClicked(post: Post) {
+                    viewModel.likeById(post.id)
+                }
+
+                override fun onShareClicked(post: Post) {
+                    viewModel.shareById(post.id)
+                }
+            }
         )
 
-        binding.root.adapter = adapter
-        binding.root.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
+        binding.list.adapter = adapter
+        binding.list.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
         viewModel.data.observe(this, adapter::submitList)
+        viewModel.edited.observe(this) {
+            binding.content.setText(it.content)
+            if (it.content.isNotBlank()) {
+                binding.content.requestFocus()
+            }
+        }
+        binding.save.setOnClickListener{
+            val text = binding.content.text?.toString().orEmpty()
+            if (text.isBlank()) {
+                Toast.makeText(this, getString(R.string.empty_post_error), Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            viewModel.changeContent(text)
+            viewModel.save()
+            binding.content.clearFocus()
+            it.hideKeyboard()
+        }
     }
 }

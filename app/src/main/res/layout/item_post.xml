@@ -16,7 +16,7 @@
         android:ellipsize="end"
         android:maxLines="1"
         app:layout_constraintBottom_toTopOf="@+id/publishedTv"
-        app:layout_constraintEnd_toStartOf="@id/moreIv"
+        app:layout_constraintEnd_toStartOf="@id/menu"
         app:layout_constraintStart_toEndOf="@+id/avatarIv"
         app:layout_constraintTop_toTopOf="@+id/avatarIv"
         app:layout_goneMarginStart="8dp"
@@ -34,7 +34,7 @@
         tools:text="@sample/posts.json/data/published" />
 
     <ImageView
-        android:id="@+id/moreIv"
+        android:id="@+id/menu"
         android:layout_width="24dp"
         android:layout_height="24dp"
         app:layout_constraintBottom_toBottomOf="@id/avatarIv"

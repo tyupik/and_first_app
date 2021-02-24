@@ -7,14 +7,11 @@ import androidx.recyclerview.widget.ListAdapter
 import ru.netology.nmedia.Post
 import ru.netology.nmedia.databinding.ItemPostBinding
 
-typealias OnLikeListener = (post: Post) -> Unit
-typealias OnShareListener = (post: Post) -> Unit
+
 
 
 class PostAdapter(
-    val onPostLiked: OnLikeListener,
-    val onPostShared: OnShareListener,
-
+    private val listener: PostAdapterClickListener
 ) : ListAdapter<Post, PostViewHolder>(PostDiffItemCallBack) {
 
 
@@ -25,8 +22,7 @@ class PostAdapter(
                 parent,
                 false
             ),
-            onPostLiked,
-            onPostShared
+            listener
         )
 
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
