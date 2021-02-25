@@ -52,4 +52,11 @@ class PostViewModel : ViewModel() {
     fun edit (post: Post) {
         edited.value = post
     }
+
+    fun cancelEditing() {
+        edited.value?.let {
+            repository.cancelEditing(it)
+        }
+        edited.value = defaultPost
+    }
 }

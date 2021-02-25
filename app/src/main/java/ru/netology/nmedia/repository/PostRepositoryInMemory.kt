@@ -105,4 +105,10 @@ class PostRepositoryInMemory : PostRepository {
             else it
         }
     }
+
+    override fun cancelEditing(post: Post) {
+        data.value = data.value?.map {
+            it.copy(content = it.content)
+        }
+    }
 }

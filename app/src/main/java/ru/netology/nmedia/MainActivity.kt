@@ -4,7 +4,12 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.constraintlayout.widget.Group
+import androidx.core.view.isInvisible
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DividerItemDecoration
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main.view.*
 import ru.netology.nmedia.AndroidUtils.hideKeyboard
 import ru.netology.nmedia.adapter.PostAdapter
 import ru.netology.nmedia.adapter.PostAdapterClickListener
@@ -23,6 +28,7 @@ class MainActivity : AppCompatActivity() {
         val adapter = PostAdapter(
             object: PostAdapterClickListener {
                 override fun onEditClicked(post: Post) {
+                    binding.root.edit_group.visibility = Group.VISIBLE
                     viewModel.edit(post)
                 }
 
@@ -37,6 +43,7 @@ class MainActivity : AppCompatActivity() {
                 override fun onShareClicked(post: Post) {
                     viewModel.shareById(post.id)
                 }
+
             }
         )
 
@@ -45,10 +52,12 @@ class MainActivity : AppCompatActivity() {
         viewModel.data.observe(this, adapter::submitList)
         viewModel.edited.observe(this) {
             binding.content.setText(it.content)
+            binding.editableText.setText(it.content)
             if (it.content.isNotBlank()) {
                 binding.content.requestFocus()
             }
         }
+
         binding.save.setOnClickListener{
             val text = binding.content.text?.toString().orEmpty()
             if (text.isBlank()) {
@@ -59,6 +68,13 @@ class MainActivity : AppCompatActivity() {
             viewModel.save()
             binding.content.clearFocus()
             it.hideKeyboard()
+            binding.root.edit_group.visibility = Group.GONE
+        }
+        binding.cancel.setOnClickListener{
+            viewModel.cancelEditing()
+            binding.content.clearFocus()
+            it.hideKeyboard()
+            binding.root.edit_group.visibility = Group.GONE
         }
     }
 }
