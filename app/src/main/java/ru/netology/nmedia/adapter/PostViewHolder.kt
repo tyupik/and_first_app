@@ -19,11 +19,9 @@ class PostViewHolder(
             authorTv.text = post.author
             publishedTv.text = post.published
             textTv.text = post.content
-            like.setImageResource(
-                if (post.likedByMe) R.drawable.like_red else R.drawable.empty_like
-            )
-            binding.likeCount.text = setRoundCount(post.likeCount)
-            binding.shareCount.text = setRoundCount(post.shareCount)
+            like.isChecked = post.likedByMe
+            like.text = setRoundCount(post.likeCount)
+            share.text = setRoundCount(post.shareCount)
 
             like.setOnClickListener {
                 listener.onLikeClicked(post)

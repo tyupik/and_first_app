@@ -24,7 +24,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val viewModel: PostViewModel by viewModels()
-
         val adapter = PostAdapter(
             object: PostAdapterClickListener {
                 override fun onEditClicked(post: Post) {
@@ -52,7 +51,7 @@ class MainActivity : AppCompatActivity() {
         viewModel.data.observe(this, adapter::submitList)
         viewModel.edited.observe(this) {
             binding.content.setText(it.content)
-            binding.editableText.setText(it.content)
+            binding.editableText.text = it.content
             if (it.content.isNotBlank()) {
                 binding.content.requestFocus()
             }

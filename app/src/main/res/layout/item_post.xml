@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="8dp"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    tools:ignore="MissingClass">
 
     <TextView
         android:id="@+id/authorTv"
@@ -33,19 +34,31 @@
         app:layout_goneMarginStart="8dp"
         tools:text="@sample/posts.json/data/published" />
 
-    <ImageView
+<!--    <ImageView-->
+<!--        android:id="@+id/menu"-->
+<!--        android:layout_width="24dp"-->
+<!--        android:layout_height="24dp"-->
+<!--        app:layout_constraintBottom_toBottomOf="@id/avatarIv"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="@id/avatarIv"-->
+<!--        app:srcCompat="@drawable/ic_baseline_more_vert_24" />-->
+
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/menu"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="@id/avatarIv"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/avatarIv"
-        app:srcCompat="@drawable/ic_baseline_more_vert_24" />
+        app:icon="@drawable/ic_baseline_more_vert_24"
+        style="@style/Widget.AppTheme.MenuButton"/>
+
+
 
     <ImageView
         android:id="@+id/avatarIv"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:srcCompat="@sample/posts.json/data/authorAvatar" />
@@ -58,9 +71,11 @@
         app:constraint_referenced_ids="avatarIv"/>
 
     <TextView
-        android:padding="8dp"
-        app:layout_constraintStart_toStartOf="parent"
         android:id="@+id/textTv"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         android:autoLink="web"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -76,67 +91,88 @@
         app:barrierDirection="bottom"
         app:constraint_referenced_ids="textTv"/>
 
-    <ImageView
+<!--    <ImageView-->
+<!--        android:id="@+id/like"-->
+<!--        android:layout_width="30dp"-->
+<!--        android:layout_height="30dp"-->
+<!--        app:srcCompat="@drawable/empty_like"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/barrier2"-->
+<!--        android:layout_margin="4dp" />-->
+
+<!--    <TextView-->
+<!--        android:id="@+id/likeCount"-->
+<!--        android:layout_width="51dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text=""-->
+<!--        android:textSize="15sp"-->
+<!--        android:layout_marginStart="5dp"-->
+<!--        app:layout_constraintTop_toTopOf="@id/like"-->
+<!--        app:layout_constraintBottom_toBottomOf="@id/like"-->
+<!--        app:layout_constraintStart_toEndOf="@id/like"/>-->
+
+<!--    <ImageView-->
+<!--        android:id="@+id/share"-->
+<!--        android:layout_width="30dp"-->
+<!--        android:layout_height="30dp"-->
+<!--        app:srcCompat="@drawable/share"-->
+<!--        android:layout_marginStart="15dp"-->
+<!--        app:layout_constraintTop_toTopOf="@id/like"-->
+<!--        app:layout_constraintBottom_toBottomOf="@id/like"-->
+<!--        app:layout_constraintStart_toEndOf="@id/likeCount"/>-->
+
+<!--    <TextView-->
+<!--        android:id="@+id/shareCount"-->
+<!--        android:layout_width="51dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text=""-->
+<!--        android:textSize="15sp"-->
+<!--        android:layout_marginStart="5dp"-->
+<!--        app:layout_constraintTop_toTopOf="@id/like"-->
+<!--        app:layout_constraintBottom_toBottomOf="@id/like"-->
+<!--        app:layout_constraintStart_toEndOf="@id/share"/>-->
+
+<!--    <TextView-->
+<!--        android:id="@+id/numbersOfView"-->
+<!--        android:layout_width="46dp"-->
+<!--        android:textSize="15sp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="999,9K"-->
+<!--        android:layout_marginEnd="8dp"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="@id/like"-->
+<!--        app:layout_constraintBottom_toBottomOf="@id/like"/>-->
+
+<!--    <ImageView-->
+<!--        android:id="@+id/views"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        app:srcCompat="@drawable/viewing"-->
+<!--        android:layout_marginEnd="8dp"-->
+<!--        app:layout_constraintTop_toTopOf="@id/like"-->
+<!--        app:layout_constraintBottom_toBottomOf="@id/like"-->
+<!--        app:layout_constraintEnd_toStartOf="@id/numbersOfView"/>-->
+
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/like"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        app:srcCompat="@drawable/empty_like"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/barrier2"
-        android:layout_margin="4dp" />
-
-    <TextView
-        android:id="@+id/likeCount"
-        android:layout_width="51dp"
-        android:layout_height="wrap_content"
-        android:text=""
-        android:textSize="15sp"
-        android:layout_marginStart="5dp"
-        app:layout_constraintTop_toTopOf="@id/like"
-        app:layout_constraintBottom_toBottomOf="@id/like"
-        app:layout_constraintStart_toEndOf="@id/like"/>
-
-    <ImageView
-        android:id="@+id/share"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        app:srcCompat="@drawable/share"
-        android:layout_marginStart="15dp"
-        app:layout_constraintTop_toTopOf="@id/like"
-        app:layout_constraintBottom_toBottomOf="@id/like"
-        app:layout_constraintStart_toEndOf="@id/likeCount"/>
-
-    <TextView
-        android:id="@+id/shareCount"
-        android:layout_width="51dp"
-        android:layout_height="wrap_content"
-        android:text=""
-        android:textSize="15sp"
-        android:layout_marginStart="5dp"
-        app:layout_constraintTop_toTopOf="@id/like"
-        app:layout_constraintBottom_toBottomOf="@id/like"
-        app:layout_constraintStart_toEndOf="@id/share"/>
-
-    <TextView
-        android:id="@+id/numbersOfView"
-        android:layout_width="46dp"
-        android:textSize="15sp"
-        android:layout_height="wrap_content"
-        android:text="999,9K"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/like"
-        app:layout_constraintBottom_toBottomOf="@id/like"/>
-
-    <ImageView
-        android:id="@+id/views"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:srcCompat="@drawable/viewing"
-        android:layout_marginEnd="8dp"
+        android:checkable="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/barrier2"
+        app:icon="@drawable/ic_like_24dp"
+        style="@style/Widget.AppTheme.LikeCheckBox"
+        android:layout_marginStart="@dimen/fab_margin"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/share"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="@id/like"
         app:layout_constraintBottom_toBottomOf="@id/like"
-        app:layout_constraintEnd_toStartOf="@id/numbersOfView"/>
-
+        app:layout_constraintStart_toEndOf="@id/like"
+        app:icon="@drawable/share"
+        style="@style/Widget.AppTheme.ShareButton"
+        android:layout_marginStart="@dimen/common_spacing"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

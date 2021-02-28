@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import ru.netology.nmedia.Post
 import ru.netology.nmedia.databinding.ItemPostBinding
-
+import android.widget.CheckBox
 
 
 
