@@ -10,6 +10,7 @@
      <style name="Widget.AppTheme.LikeCheckBox"
          parent="Widget.MaterialComponents.Button.TextButton.Icon">
          <item name="iconTint">@color/like_checkbox_tint</item>
+         <item name="android:textColor">@color/text_color</item>
          <item name="android:minWidth">@dimen/icon_button_min_size</item>
          <item name="android:minHeight">@dimen/icon_button_min_size</item>
      </style>
@@ -17,6 +18,7 @@
     <style name="Widget.AppTheme.ShareButton"
         parent="Widget.MaterialComponents.Button.TextButton.Icon">
         <item name="iconTint">@color/share_tint</item>
+        <item name="android:textColor">@color/text_color</item>
         <item name="android:minWidth">@dimen/icon_button_min_size</item>
         <item name="android:minHeight">@dimen/icon_button_min_size</item>
     </style>
