@@ -7,4 +7,6 @@
     <string name="empty_post_error">Пустой пост!</string>
     <string name="edit_text">Редактирование</string>
     <string name="hint_post_text">Текст поста</string>
+    <string name="chooser_share_post">Поделиться</string>
+    <string name="error_empty_content">Контент не может быть пустым</string>
 </resources>

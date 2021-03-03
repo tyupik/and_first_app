@@ -34,14 +34,6 @@
         app:layout_goneMarginStart="8dp"
         tools:text="@sample/posts.json/data/published" />
 
-<!--    <ImageView-->
-<!--        android:id="@+id/menu"-->
-<!--        android:layout_width="24dp"-->
-<!--        android:layout_height="24dp"-->
-<!--        app:layout_constraintBottom_toBottomOf="@id/avatarIv"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="@id/avatarIv"-->
-<!--        app:srcCompat="@drawable/ic_baseline_more_vert_24" />-->
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/menu"
@@ -76,13 +68,12 @@
         android:layout_marginBottom="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/barrier2"
         android:autoLink="web"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         tools:text="@sample/posts.json/data/content"
-        app:layout_constraintTop_toBottomOf="@id/barrier"
-        tools:layout_editor_absoluteX="45dp"
-        tools:layout_editor_absoluteY="86dp" />
+        app:layout_constraintTop_toBottomOf="@id/barrier" />
 
     <androidx.constraintlayout.widget.Barrier
         android:id="@+id/barrier2"

@@ -1,5 +1,6 @@
 package ru.netology.nmedia.repository
 
+import android.content.Intent
 import androidx.lifecycle.MutableLiveData
 import ru.netology.nmedia.Post
 
@@ -86,6 +87,7 @@ class PostRepositoryInMemory : PostRepository {
         data.value = data.value?.map {
             if (it.id == id) it.copy(shareCount = it.shareCount.inc()) else it
         }
+
     }
 
     override fun removeById(id: Long) {

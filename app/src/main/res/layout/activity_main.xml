@@ -54,7 +54,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:visibility="gone"
-        app:constraint_referenced_ids="cancel, edit_pic, edit_label, editable_text"
+        app:constraint_referenced_ids="cancel, edit_pic, edit_label, editable_text, content, save"
         tools:ignore="NotSibling" />
 
     <ImageView
@@ -106,4 +106,14 @@
         app:layout_constraintStart_toEndOf="@+id/edit_pic"
         app:layout_constraintTop_toBottomOf="@id/edit_label"
         android:textSize="13sp" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/fab_margin"
+        android:clickable="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/ic_add_24dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>

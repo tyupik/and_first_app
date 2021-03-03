@@ -1,12 +1,12 @@
 package ru.netology.nmedia
 
+import android.app.Activity
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.constraintlayout.widget.Group
-import androidx.core.view.isInvisible
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DividerItemDecoration
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main.view.*
@@ -18,16 +18,22 @@ import ru.netology.nmedia.viewmodel.PostViewModel
 
 
 class MainActivity : AppCompatActivity() {
+    private val newPostRequestCode = 1
+    val viewModel: PostViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        val viewModel: PostViewModel by viewModels()
         val adapter = PostAdapter(
-            object: PostAdapterClickListener {
+            object : PostAdapterClickListener {
                 override fun onEditClicked(post: Post) {
-                    binding.root.edit_group.visibility = Group.VISIBLE
+
+                    val intent = Intent (this@MainActivity, NewPostActivity::class.java).apply {
+                        action = "post.content"
+                        putExtra("post.text", post.content)
+                    }
+                    startActivityForResult(intent, newPostRequestCode)
+
                     viewModel.edit(post)
                 }
 
@@ -40,8 +46,18 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 override fun onShareClicked(post: Post) {
+
+                    val intent = Intent().apply {
+                        action = Intent.ACTION_SEND
+                        putExtra(Intent.EXTRA_TEXT, post.content)
+                        type = "text/plain"
+                    }
+
+                    val shareIntent = Intent.createChooser(intent, getString(R.string.chooser_share_post))
+                    startActivity(shareIntent)
                     viewModel.shareById(post.id)
                 }
+
 
             }
         )
@@ -49,18 +65,12 @@ class MainActivity : AppCompatActivity() {
         binding.list.adapter = adapter
         binding.list.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
         viewModel.data.observe(this, adapter::submitList)
-        viewModel.edited.observe(this) {
-            binding.content.setText(it.content)
-            binding.editableText.text = it.content
-            if (it.content.isNotBlank()) {
-                binding.content.requestFocus()
-            }
-        }
 
-        binding.save.setOnClickListener{
-            val text = binding.content.text?.toString().orEmpty()
+        binding.save.setOnClickListener {
+            val text = binding.content.text?.toString().orEmpty().trim()
             if (text.isBlank()) {
-                Toast.makeText(this, getString(R.string.empty_post_error), Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.empty_post_error), Toast.LENGTH_SHORT)
+                    .show()
                 return@setOnClickListener
             }
             viewModel.changeContent(text)
@@ -69,11 +79,32 @@ class MainActivity : AppCompatActivity() {
             it.hideKeyboard()
             binding.root.edit_group.visibility = Group.GONE
         }
-        binding.cancel.setOnClickListener{
+        binding.cancel.setOnClickListener {
             viewModel.cancelEditing()
             binding.content.clearFocus()
             it.hideKeyboard()
             binding.root.edit_group.visibility = Group.GONE
+        }
+        binding.fab.setOnClickListener{
+            val intent = Intent(this, NewPostActivity::class.java)
+            startActivityForResult(intent, newPostRequestCode)
+        }
+
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            newPostRequestCode -> {
+                if (resultCode != Activity.RESULT_OK){
+                    return
+                }
+
+                data?.getStringExtra(Intent.EXTRA_TEXT)?.let{
+                    viewModel.changeContent(it)
+                    viewModel.save()
+                }
+            }
         }
     }
 }
