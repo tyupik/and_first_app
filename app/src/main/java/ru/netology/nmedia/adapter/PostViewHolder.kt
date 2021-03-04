@@ -15,7 +15,11 @@ class PostViewHolder(
 ) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(post: Post) {
+        if (!post.video.isNullOrEmpty()){
+            binding.videoGroup.visibility = Group.VISIBLE
+        }
         binding.apply {
+            avatarIv.setImageResource(R.drawable.avatar)
             authorTv.text = post.author
             publishedTv.text = post.published
             textTv.text = post.content
@@ -29,11 +33,14 @@ class PostViewHolder(
             share.setOnClickListener {
                 listener.onShareClicked(post)
             }
-            menu.setOnClickListener{
+            video.setOnClickListener{
+                listener.onVideoClicked(post)
+            }
+            menu.setOnClickListener {
                 PopupMenu(it.context, it).apply {
                     inflate(R.menu.options_post)
                     setOnMenuItemClickListener { menuItem ->
-                        when(menuItem.itemId){
+                        when (menuItem.itemId) {
                             R.id.remove -> {
                                 listener.onRemoveClicked(post)
                                 true

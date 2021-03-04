@@ -21,7 +21,7 @@ class PostViewModel : ViewModel() {
     private val repository = PostRepositoryInMemory()
     val data: MutableLiveData<List<Post>>
         get() = repository.data
-    val edited = MutableLiveData(defaultPost)
+    private val edited = MutableLiveData(defaultPost)
     fun likeById(id: Long) {
         repository.likeById(id)
     }
@@ -59,4 +59,9 @@ class PostViewModel : ViewModel() {
         }
         edited.value = defaultPost
     }
+
+    fun getUri(post: Post): Boolean {
+        return repository.isVideo(post)
+    }
+
 }

@@ -10,6 +10,14 @@ class PostRepositoryInMemory : PostRepository {
         Post(
             id = ids++,
             author = "Нетология. Университет интернет-профессий будущего",
+            content = "Тестовый пост с видео",
+            published = "23 сентября в 10:12",
+            likedByMe = false,
+            video = "https://www.youtube.com/watch?v=WhWc3b3KhnY"
+        ),
+        Post(
+            id = ids++,
+            author = "Нетология. Университет интернет-профессий будущего",
             content = "Освоение новой профессии — это не только открывающиеся возможности и перспективы, но и настоящий вызов самому себе. Приходится выходить из зоны комфорта и перестраивать привычный образ жизни: менять распорядок дня, искать время для занятий, быть готовым к возможным неудачам в начале пути. В блоге рассказали, как избежать стресса на курсах профпереподготовки → http://netolo.gy/fPD",
             published = "23 сентября в 10:12",
             likedByMe = false
@@ -112,5 +120,9 @@ class PostRepositoryInMemory : PostRepository {
         data.value = data.value?.map {
             it.copy(content = it.content)
         }
+    }
+
+    override fun isVideo(post: Post): Boolean {
+        return (!post.video.isNullOrEmpty())
     }
 }
