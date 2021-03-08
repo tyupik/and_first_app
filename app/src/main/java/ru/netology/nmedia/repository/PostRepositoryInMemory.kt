@@ -1,6 +1,7 @@
 package ru.netology.nmedia.repository
 
 import android.content.Intent
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import ru.netology.nmedia.Post
 
@@ -79,7 +80,10 @@ class PostRepositoryInMemory : PostRepository {
             likedByMe = false
         ),
     )
-    override val data = MutableLiveData<List<Post>>(posts)
+
+    private val data = MutableLiveData(posts)
+
+    override fun getAll(): LiveData<List<Post>> = data
 
     override fun likeById(id: Long) {
         data.value = data.value?.map {
