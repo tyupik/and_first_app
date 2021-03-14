@@ -10,32 +10,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-<<<<<<< HEAD
         <activity android:name=".MainActivity">
             <nav-graph android:value="@navigation/nav_main"/>
-=======
-        <activity android:name=".NewPostActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.SEND" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-
-        <activity android:name=".IntentHandlerActivity">
->>>>>>> 0c5698f812532553fd8ab7de70690d24ce284a98
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
 
                 <category android:name="android.intent.category.DEFAULT" />
-<<<<<<< HEAD
             </intent-filter>
-=======
-
-                <data android:mimeType="text/plain" />
-            </intent-filter>
-        </activity>
-        <activity android:name=".MainActivity">
->>>>>>> 0c5698f812532553fd8ab7de70690d24ce284a98
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

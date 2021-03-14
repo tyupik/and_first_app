@@ -5,11 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="8dp"
-<<<<<<< HEAD
     tools:context=".FeedFragment"
-=======
-    tools:context=".MainActivity"
->>>>>>> 0c5698f812532553fd8ab7de70690d24ce284a98
     tools:ignore="MissingClass">
 
     <TextView
