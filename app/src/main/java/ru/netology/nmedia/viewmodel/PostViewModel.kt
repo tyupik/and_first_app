@@ -2,15 +2,11 @@ package ru.netology.nmedia.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import ru.netology.nmedia.Post
 import ru.netology.nmedia.db.AppDb
 import ru.netology.nmedia.repository.PostRepository
-import ru.netology.nmedia.repository.PostRepositoryFileImpl
-import ru.netology.nmedia.repository.PostRepositoryInMemory
-import ru.netology.nmedia.repository.PostRepositorySQLiteImpl
+import ru.netology.nmedia.repository.PostRepositoryImpl
 
 private val defaultPost = Post(
     id = 0L,
@@ -25,10 +21,9 @@ private val defaultPost = Post(
 
 class PostViewModel(application: Application) : AndroidViewModel(application) {
     // упрощённый вариант
-    private val repository: PostRepository = PostRepositorySQLiteImpl(
-        AppDb.getInstance(application).postDao
-    )
+//    private val repository: PostRepository = PostRepositorySQLiteImpl(AppDb.getInstance(application).postDao)   //SQLite
 //    private val repository: PostRepository = PostRepositoryFileImpl(application)    //FileRepository
+    private val repository: PostRepository = PostRepositoryImpl(AppDb.getInstance(context = application).postDao())
     val data = repository.getAll()
     private val edited = MutableLiveData(defaultPost)
 
@@ -63,15 +58,15 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         edited.value = post
     }
 
-    fun cancelEditing() {
-        edited.value?.let {
-            repository.cancelEditing(it)
-        }
-        edited.value = defaultPost
-    }
+//    fun cancelEditing() {
+//        edited.value?.let {
+//            repository.cancelEditing(it)
+//        }
+//        edited.value = defaultPost
+//    }
 
-    fun getUri(post: Post): Boolean {
-        return repository.isVideo(post)
-    }
+//    fun getUri(post: Post): Boolean {
+//        return repository.isVideo(post)
+//    }
 
 }

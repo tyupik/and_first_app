@@ -64,11 +64,11 @@ class FeedFragment : Fragment() {
                     viewModel.shareById(post.id)
                 }
 
-                override fun onVideoClicked(post: Post) {
-                    if (viewModel.getUri(post)) {
-                        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(post.video)))
-                    }
-                }
+//                override fun onVideoClicked(post: Post) {
+//                    if (viewModel.getUri(post)) {
+//                        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(post.video)))
+//                    }
+//                }
             }
         )
 

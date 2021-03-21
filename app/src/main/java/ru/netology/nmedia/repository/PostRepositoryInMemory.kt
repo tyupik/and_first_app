@@ -120,13 +120,13 @@ class PostRepositoryInMemory : PostRepository {
         }
     }
 
-    override fun cancelEditing(post: Post) {
-        data.value = data.value?.map {
-            it.copy(content = it.content)
-        }
-    }
-
-    override fun isVideo(post: Post): Boolean {
-        return (!post.video.isNullOrEmpty())
-    }
+//    override fun cancelEditing(post: Post) {
+//        data.value = data.value?.map {
+//            it.copy(content = it.content)
+//        }
+//    }
+//
+//    override fun isVideo(post: Post): Boolean {
+//        return (!post.video.isNullOrEmpty())
+//    }
 }
