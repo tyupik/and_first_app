@@ -9,4 +9,9 @@
     <string name="hint_post_text">Текст поста</string>
     <string name="chooser_share_post">Поделиться</string>
     <string name="error_empty_content">Контент не может быть пустым</string>
+    <string name="channel_remote_name">Уведомления с сервера</string>
+    <string name="channel_remote_description">Уведомления с удалённого сервера</string>
+    <string name="notification_user_liked">%1$s поставил лайк посту %2$s</string>
+    <string name="update_app">Версия прилолжения устарела</string>
+    <string name="notification_user_new_post">%1$s опубликовал новый пост</string>
 </resources>

@@ -10,6 +10,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+
         intent?.let {
             if (it.action != Intent.ACTION_SEND) {
                 return@let
@@ -27,4 +28,5 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             )
         }
     }
+
 }
