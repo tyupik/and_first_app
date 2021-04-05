@@ -2,16 +2,19 @@ package ru.netology.nmedia.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import ru.netology.nmedia.Post
-import ru.netology.nmedia.db.AppDb
+import ru.netology.nmedia.SingleLiveEvent
+import ru.netology.nmedia.model.FeedModel
 import ru.netology.nmedia.repository.PostRepository
 import ru.netology.nmedia.repository.PostRepositoryImpl
+import java.io.IOException
+import kotlin.concurrent.thread
 
 private val defaultPost = Post(
     id = 0L,
     author = "",
-    authorAvatar = null,
     content = "",
     published = "",
     likedByMe = false,
@@ -20,23 +23,54 @@ private val defaultPost = Post(
 )
 
 class PostViewModel(application: Application) : AndroidViewModel(application) {
-    // упрощённый вариант
-//    private val repository: PostRepository = PostRepositorySQLiteImpl(AppDb.getInstance(application).postDao)   //SQLite
-//    private val repository: PostRepository = PostRepositoryFileImpl(application)    //FileRepository
-    private val repository: PostRepository = PostRepositoryImpl(AppDb.getInstance(context = application).postDao())
-    val data = repository.getAll()
+    private val repository: PostRepository = PostRepositoryImpl()
+    private val _data = MutableLiveData(FeedModel())
+    val data: LiveData<FeedModel>
+        get() = _data
     private val edited = MutableLiveData(defaultPost)
+    private val _postCreated = SingleLiveEvent<Unit>()
+    val postCreated: LiveData<Unit>
+        get() = _postCreated
+
+    init {
+        loadPosts()
+    }
+
+    fun loadPosts() {
+        thread {
+            _data.postValue(FeedModel(loading = true))
+            try {
+                val posts = repository.getAll()
+                FeedModel(posts = posts, empty = posts.isEmpty())
+            } catch (e: IOException) {
+                FeedModel(error = true)
+            }.also (_data::postValue)
+        }
+    }
 
     fun likeById(id: Long) {
-        repository.likeById(id)
+        thread { repository.likeById(id) }
     }
 
     fun shareById(id: Long) {
-        repository.shareById(id)
+        thread { repository.shareById(id) }
     }
 
     fun removeById(id: Long) {
-        repository.removeById(id)
+        thread {
+            val old = _data.value?.posts.orEmpty()
+            _data.postValue(
+                _data.value?.copy(posts = _data.value?.posts.orEmpty()
+                    .filter { it.id != id }
+                )
+            )
+            try {
+                repository.removeById(id)
+            } catch (e: IOException) {
+                _data.postValue(_data.value?.copy(posts = old))
+            }
+        }
+
     }
 
     fun changeContent(content: String) {
@@ -49,7 +83,10 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     fun save() {
         edited.value?.let {
-            repository.save(it)
+            thread {
+                repository.save(it)
+                _postCreated.postValue(Unit)
+            }
         }
         edited.value = defaultPost
     }
@@ -58,15 +95,5 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         edited.value = post
     }
 
-//    fun cancelEditing() {
-//        edited.value?.let {
-//            repository.cancelEditing(it)
-//        }
-//        edited.value = defaultPost
-//    }
-
-//    fun getUri(post: Post): Boolean {
-//        return repository.isVideo(post)
-//    }
 
 }

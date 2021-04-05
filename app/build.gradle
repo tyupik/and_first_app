@@ -30,6 +30,10 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            manifestPlaceholders.usesCleartextTraffic = false
+        }
+        debug {
+            manifestPlaceholders.usesCleartextTraffic = true
         }
     }
 
@@ -51,6 +55,7 @@ dependencies {
     def nav_version = "2.3.2"
     def room_version = "2.2.6"
     def firebase_version = "26.7.0"
+    def okhttp_version = "4.9.1"
 
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
@@ -72,6 +77,9 @@ dependencies {
     kapt "androidx.room:room-compiler:$room_version"
     implementation platform("com.google.firebase:firebase-bom:$firebase_version")
     implementation "com.google.firebase:firebase-messaging-ktx"
+    implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
+    implementation "android.arch.lifecycle:extensions:1.1.1"
+    annotationProcessor "android.arch.lifecycle:compiler:1.1.1"
 
 
 }
