@@ -2,6 +2,7 @@ package ru.netology.nmedia
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +10,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import kotlinx.android.synthetic.main.fragment_feed.*
 import ru.netology.nmedia.NewPostFragment.Companion.textArg
 import ru.netology.nmedia.adapter.PostAdapter
 import ru.netology.nmedia.adapter.PostAdapterClickListener
@@ -46,7 +48,7 @@ class FeedFragment : Fragment() {
                 }
 
                 override fun onLikeClicked(post: Post) {
-                    viewModel.likeById(post.id)
+                    viewModel.likeById(post)
                 }
 
                 override fun onShareClicked(post: Post) {
@@ -60,7 +62,7 @@ class FeedFragment : Fragment() {
                     val shareIntent =
                         Intent.createChooser(intent, getString(R.string.chooser_share_post))
                     startActivity(shareIntent)
-                    viewModel.shareById(post.id)
+                    viewModel.shareById(post)
                 }
 
 //                override fun onVideoClicked(post: Post) {
@@ -71,7 +73,13 @@ class FeedFragment : Fragment() {
             }
         )
 
+
         binding.list.adapter = adapter
+        binding.swipeRefresh.setOnRefreshListener{
+            viewModel.loadPosts()
+            swipe_refresh.isRefreshing = false
+        }
+
         viewModel.data.observe(viewLifecycleOwner, { state ->
             adapter.submitList(state.posts)
             binding.progress.isVisible = state.loading
@@ -89,6 +97,7 @@ class FeedFragment : Fragment() {
             findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
         }
         return binding.root
-
     }
+
+
 }

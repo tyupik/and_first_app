@@ -10,11 +10,13 @@ import ru.netology.nmedia.model.FeedModel
 import ru.netology.nmedia.repository.PostRepository
 import ru.netology.nmedia.repository.PostRepositoryImpl
 import java.io.IOException
+import javax.security.auth.callback.Callback
 import kotlin.concurrent.thread
 
 private val defaultPost = Post(
     id = 0L,
     author = "",
+    authorAvatar = "1",
     content = "",
     published = "",
     likedByMe = false,
@@ -36,41 +38,68 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         loadPosts()
     }
 
+
     fun loadPosts() {
-        thread {
-            _data.postValue(FeedModel(loading = true))
-            try {
-                val posts = repository.getAll()
-                FeedModel(posts = posts, empty = posts.isEmpty())
-            } catch (e: IOException) {
-                FeedModel(error = true)
-            }.also (_data::postValue)
-        }
+        _data.value = FeedModel(loading = true)
+        repository.getAllAsync(object : PostRepository.GetAllCallback {
+            override fun onError(e: Exception) {
+                _data.postValue(FeedModel(error = true))
+            }
+
+            override fun onSuccess(posts: List<Post>) {
+                _data.postValue(FeedModel(posts = posts, empty = posts.isEmpty()))
+            }
+        })
     }
 
-    fun likeById(id: Long) {
-        thread { repository.likeById(id) }
+
+    fun likeById(post: Post) {
+        repository.likeById(post, object : PostRepository.CommonCallback {
+            override fun onError(e: Exception) {
+                _data.postValue(FeedModel(error = true))
+            }
+
+            override fun onSuccess(post: Post) {
+                _data.postValue(
+                    FeedModel(posts = _data.value?.posts
+                        .orEmpty().map {
+                            if (it.id == post.id) post else it
+                        })
+                )
+            }
+        })
     }
 
-    fun shareById(id: Long) {
-        thread { repository.shareById(id) }
+    fun shareById(post: Post) {
+        repository.shareById(post, object : PostRepository.CommonCallback {
+            override fun onError(e: Exception) {
+                super.onError(e)
+            }
+
+            override fun onSuccess(post: Post) {
+                super.onSuccess(post)
+            }
+        })
     }
 
     fun removeById(id: Long) {
-        thread {
-            val old = _data.value?.posts.orEmpty()
-            _data.postValue(
-                _data.value?.copy(posts = _data.value?.posts.orEmpty()
-                    .filter { it.id != id }
-                )
-            )
-            try {
-                repository.removeById(id)
-            } catch (e: IOException) {
-                _data.postValue(_data.value?.copy(posts = old))
-            }
-        }
+        val old = _data.value?.posts.orEmpty()
+        try {
+            repository.removeById(id, object : PostRepository.CommonCallback {
+                override fun onError(e: Exception) {
+                    _data.postValue(_data.value?.copy(posts = old))
+                }
 
+                override fun onSuccess(post: Post) {
+                    _data.postValue(
+                        _data.value?.copy(posts = _data.value?.posts.orEmpty()
+                            .filter { it.id != id })
+                    )
+                }
+            })
+        } catch (e: IOException) {
+            _data.postValue(_data.value?.copy(posts = old))
+        }
     }
 
     fun changeContent(content: String) {
@@ -82,11 +111,19 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun save() {
-        edited.value?.let {
-            thread {
-                repository.save(it)
-                _postCreated.postValue(Unit)
-            }
+        edited.value?.let { it ->
+            repository.save(it, object : PostRepository.CommonCallback {
+                override fun onError(e: Exception) {
+                    _postCreated.postValue(Unit)
+                }
+
+                override fun onSuccess(post: Post) {
+                    _data.postValue(
+                        FeedModel(posts = _data.value?.posts.orEmpty()
+                            .map { if (it.id == post.id) post else it })
+                    )
+                }
+            })
         }
         edited.value = defaultPost
     }
