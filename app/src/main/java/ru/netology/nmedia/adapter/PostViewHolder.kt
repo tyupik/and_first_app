@@ -3,6 +3,10 @@ package ru.netology.nmedia.adapter
 import android.widget.PopupMenu
 import androidx.constraintlayout.widget.Group
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.MultiTransformation
+import com.bumptech.glide.load.resource.bitmap.CircleCrop
+import com.bumptech.glide.load.resource.bitmap.FitCenter
 import kotlinx.android.synthetic.main.activity_main.view.*
 import ru.netology.nmedia.Post
 import ru.netology.nmedia.R
@@ -11,7 +15,8 @@ import kotlin.math.floor
 
 class PostViewHolder(
     private val binding: ItemPostBinding,
-    private val listener: PostAdapterClickListener
+    private val listener: PostAdapterClickListener,
+    private val url: String
 ) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(post: Post) {
@@ -51,6 +56,13 @@ class PostViewHolder(
                     }
                 }.show()
             }
+            Glide.with(binding.avatarIv)
+                .load("$url/${post.authorAvatar}")
+                .placeholder(R.drawable.ic_loading_100dp)
+                .error(R.drawable.ic_error_100dp)
+                .timeout(10_000)
+                .transform(MultiTransformation(FitCenter(), CircleCrop()))
+                .into(binding.avatarIv)
         }
     }
 

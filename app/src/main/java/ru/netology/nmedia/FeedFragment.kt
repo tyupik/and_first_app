@@ -15,6 +15,7 @@ import ru.netology.nmedia.NewPostFragment.Companion.textArg
 import ru.netology.nmedia.adapter.PostAdapter
 import ru.netology.nmedia.adapter.PostAdapterClickListener
 import ru.netology.nmedia.databinding.FragmentFeedBinding
+import ru.netology.nmedia.repository.PostRepositoryImpl
 import ru.netology.nmedia.viewmodel.PostViewModel
 
 class FeedFragment : Fragment() {
@@ -70,7 +71,9 @@ class FeedFragment : Fragment() {
 //                        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(post.video)))
 //                    }
 //                }
-            }
+            },
+            "${PostRepositoryImpl.BASE_URL}/avatars/"
+
         )
 
 

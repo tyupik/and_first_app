@@ -11,7 +11,8 @@ import android.widget.CheckBox
 
 
 class PostAdapter(
-    private val listener: PostAdapterClickListener
+    private val listener: PostAdapterClickListener,
+    private val url: String
 ) : ListAdapter<Post, PostViewHolder>(PostDiffItemCallBack) {
 
 
@@ -22,7 +23,8 @@ class PostAdapter(
                 parent,
                 false
             ),
-            listener
+            listener,
+            url
         )
 
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
