@@ -16,7 +16,6 @@ class PostRepositoryImpl : PostRepository {
         .build()
     private val gson = Gson()
     private val typeToken = object : TypeToken<List<Post>>() {}
-    private val likeTypeToken = object : TypeToken<Post>() {}
 
     companion object {
         const val BASE_URL = "http://192.168.3.9:9999"
@@ -82,7 +81,7 @@ class PostRepositoryImpl : PostRepository {
                 override fun onResponse(call: Call, response: Response) {
                     val body = response.body?.string() ?: throw RuntimeException("boyd is null")
                     try {
-                        callback.onSuccess(gson.fromJson(body, typeToken.type))
+                        callback.onSuccess(gson.fromJson(body, Post::class.java))
                     } catch (e: Exception) {
                         callback.onError(e)
                     }
