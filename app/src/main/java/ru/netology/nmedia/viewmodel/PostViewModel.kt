@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import ru.netology.nmedia.Post
 import ru.netology.nmedia.SingleLiveEvent
 import ru.netology.nmedia.model.FeedModel
+import ru.netology.nmedia.repository.BadConnectionException
 import ru.netology.nmedia.repository.PostRepository
 import ru.netology.nmedia.repository.PostRepositoryImpl
 import java.io.IOException
@@ -41,9 +42,13 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     fun loadPosts() {
         _data.value = FeedModel(loading = true)
-        repository.getAllAsync(object : PostRepository.GetAllCallback {
+        repository.getAllAsync(object : PostRepository.Callback<List<Post>> {
             override fun onError(e: Exception) {
-                _data.postValue(FeedModel(error = true))
+                if (e is BadConnectionException) {
+                    _data.value = FeedModel(internetError = true)
+                } else {
+                    _data.value = FeedModel(error = true)
+                }
             }
 
             override fun onSuccess(posts: List<Post>) {
@@ -54,9 +59,13 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
 
     fun likeById(post: Post) {
-        repository.likeById(post, object : PostRepository.CommonCallback {
+        repository.likeById(post, object : PostRepository.Callback<Post> {
             override fun onError(e: Exception) {
-                _data.postValue(FeedModel(error = true))
+                if (e is BadConnectionException) {
+                    _data.value = FeedModel(internetError = true)
+                } else {
+                    _data.value = FeedModel(error = true)
+                }
             }
 
             override fun onSuccess(post: Post) {
@@ -71,7 +80,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun shareById(post: Post) {
-        repository.shareById(post, object : PostRepository.CommonCallback {
+        repository.shareById(post, object : PostRepository.Callback<Post> {
             override fun onError(e: Exception) {
                 super.onError(e)
             }
@@ -85,12 +94,17 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     fun removeById(id: Long) {
         val old = _data.value?.posts.orEmpty()
         try {
-            repository.removeById(id, object : PostRepository.CommonCallback {
+            repository.removeById(id, object : PostRepository.Callback<Unit> {
                 override fun onError(e: Exception) {
+                    if (e is BadConnectionException) {
+                        _data.value = FeedModel(internetError = true)
+                    } else {
+                        _data.value = FeedModel(error = true)
+                    }
                     _data.postValue(_data.value?.copy(posts = old))
                 }
 
-                override fun onSuccess(post: Post) {
+                override fun onSuccess(unit: Unit) {
                     _data.postValue(
                         _data.value?.copy(posts = _data.value?.posts.orEmpty()
                             .filter { it.id != id })
@@ -112,16 +126,24 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     fun save() {
         edited.value?.let { it ->
-            repository.save(it, object : PostRepository.CommonCallback {
+            repository.save(it, object : PostRepository.Callback<Post> {
                 override fun onError(e: Exception) {
+                    if (e is BadConnectionException) {
+                        _data.value = FeedModel(internetError = true)
+                    } else {
+                        _data.value = FeedModel(error = true)
+                    }
                     _postCreated.postValue(Unit)
                 }
 
                 override fun onSuccess(post: Post) {
-                    _data.postValue(
-                        FeedModel(posts = _data.value?.posts.orEmpty()
-                            .map { if (it.id == post.id) post else it })
-                    )
+                    if (edited.value?.id != defaultPost.id) {
+                        _data.postValue(
+                            FeedModel(posts = _data.value?.posts
+                                .orEmpty().map { if (it.id == post.id) post else it })
+                        )
+                    }
+                    _postCreated.value = Unit
                 }
             })
         }

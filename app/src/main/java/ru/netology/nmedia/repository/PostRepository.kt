@@ -6,21 +6,17 @@ import ru.netology.nmedia.Post
 interface PostRepository {
     //    val data: LiveData<List<Post>>
     fun getAll(): List<Post>
-    fun likeById(post: Post, callback: CommonCallback)
-    fun shareById(post: Post, callback: CommonCallback)
-    fun removeById(id: Long, callback: CommonCallback)
-    fun save(post: Post, callback: CommonCallback)
+    fun likeById(post: Post, callback: Callback<Post>)
+    fun shareById(post: Post, callback: Callback<Post>)
+    fun removeById(id: Long, callback: Callback<Unit>)
+    fun save(post: Post, callback: Callback<Post>)
 
-    fun getAllAsync(callback: GetAllCallback)
+    fun getAllAsync(callback: Callback<List<Post>>)
 
-    interface GetAllCallback {
+    interface Callback<T> {
         fun onError(e: Exception) {}
-        fun onSuccess(posts: List<Post>) {}
+        fun onSuccess(posts: T) {}
     }
-
-    interface CommonCallback {
-        fun onError(e: Exception) {}
-        fun onSuccess(post: Post) {}
-    }
-
 }
+
+class BadConnectionException(message:String): Exception(message)
