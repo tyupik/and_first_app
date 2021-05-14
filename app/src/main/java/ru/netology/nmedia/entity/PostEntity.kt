@@ -1,6 +1,5 @@
 package ru.netology.nmedia.entity
 
-import android.widget.ImageView
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import ru.netology.nmedia.Post
@@ -43,3 +42,6 @@ data class PostEntity(
             )
     }
 }
+
+fun List<PostEntity>.toDto(): List<Post> = map(PostEntity::toDto)
+fun List<Post>.toEntity(): List<PostEntity> = map(PostEntity::fromDto)

@@ -11,6 +11,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_feed.*
 import ru.netology.nmedia.NewPostFragment.Companion.textArg
 import ru.netology.nmedia.adapter.PostAdapter
@@ -68,31 +69,37 @@ class FeedFragment : Fragment() {
                 }
 
             },
-            "${PostRepositoryImpl.BASE_URL}/avatars/"
+            "${BuildConfig.BASE_URL}/avatars/"
 
         )
 
 
         binding.list.adapter = adapter
+
         binding.swipeRefresh.setOnRefreshListener{
             viewModel.loadPosts()
             swipe_refresh.isRefreshing = false
         }
 
-        viewModel.data.observe(viewLifecycleOwner, { state ->
-            adapter.submitList(state.posts)
-
-            if (state.internetError) {
-                Toast.makeText(requireContext(),"Connection error. Try again", Toast.LENGTH_SHORT).show()
-                binding.errorGroup.isVisible = true
-            }
+        viewModel.dataState.observe(viewLifecycleOwner, { state ->
+            binding.errorGroup.isVisible = false
             binding.progress.isVisible = state.loading
-            binding.errorGroup.isVisible = state.error
+            binding.swipeRefresh.isRefreshing = state.refreshing
+            if(state.error) {
+//                binding.errorGroup.isVisible = state.error
+                Snackbar.make(binding.root, R.string.error_loading, Snackbar.LENGTH_LONG)
+                    .setAction(R.string.retry_loading) {viewModel.loadPosts()}
+                    .show()
+            }
+        })
+
+        viewModel.data.observe(viewLifecycleOwner, {state ->
+            adapter.submitList(state.posts)
             binding.emptyText.isVisible = state.empty
         })
 
         binding.retryButton.setOnClickListener {
-            viewModel.loadPosts()
+            viewModel.refreshPosts()
         }
 
 

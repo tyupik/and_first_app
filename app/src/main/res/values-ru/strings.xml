@@ -16,5 +16,5 @@
     <string name="notification_user_new_post">%1$s опубликовал новый пост</string>
     <string name="retry_loading">Повторить</string>
     <string name="empty_posts">Постов нет.\nЕсли создадите новый пост, то он появится здесь</string>
-    <string name="error_loading">Что-то пошло не так. Попробуйте позднее</string>
+    <string name="error_loading">Не удалось загрузить данные</string>
 </resources>
