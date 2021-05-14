@@ -31,6 +31,7 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             manifestPlaceholders.usesCleartextTraffic = false
+            buildConfigField "String", "BASE_URL", '"http://192.168.3.9:9999"'
         }
         debug {
             manifestPlaceholders.usesCleartextTraffic = true
