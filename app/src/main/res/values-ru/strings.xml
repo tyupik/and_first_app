@@ -17,4 +17,5 @@
     <string name="retry_loading">Повторить</string>
     <string name="empty_posts">Постов нет.\nЕсли создадите новый пост, то он появится здесь</string>
     <string name="error_loading">Не удалось загрузить данные</string>
+    <string name="new_posts_btn">↑ Свежие записи</string>
 </resources>

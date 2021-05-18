@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -94,14 +95,37 @@ class FeedFragment : Fragment() {
         })
 
         viewModel.data.observe(viewLifecycleOwner, {state ->
-            adapter.submitList(state.posts)
             binding.emptyText.isVisible = state.empty
+
+            if (adapter.itemCount == 0){
+                adapter.submitList(state.posts)
+            }
+
+            if  (state.posts.size == adapter.itemCount){
+                adapter.submitList(state.posts)
+            } else{
+                binding.newpostsBtn.isGone = false
+                viewModel.updateNewPostsList(state.posts)
+            }
         })
+
+        viewModel.newerCount.observe(viewLifecycleOwner) { state ->
+
+            println(state)
+        }
 
         binding.retryButton.setOnClickListener {
             viewModel.refreshPosts()
         }
 
+        binding.newpostsBtn.setOnClickListener {
+            binding.newpostsBtn.isGone = true
+            adapter.submitList(viewModel.addNewPosts())
+            binding.list.postDelayed(Runnable {
+                binding.list.smoothScrollToPosition(0)
+            }, 700)
+
+        }
 
 
         binding.fab.setOnClickListener {
