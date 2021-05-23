@@ -1,6 +1,6 @@
 package ru.netology.nmedia.adapter
 
-import ru.netology.nmedia.Post
+import ru.netology.nmedia.dto.Post
 
 //typealias OnLikeListener = (post: Post) -> Unit
 //typealias OnShareListener = (post: Post) -> Unit
@@ -11,5 +11,6 @@ interface PostAdapterClickListener {
     fun onRemoveClicked(post: Post)
     fun onLikeClicked(post: Post)
     fun onShareClicked(post: Post)
+    fun onAttachmentClicked(post: Post)
 //    fun onVideoClicked(post: Post)
 }

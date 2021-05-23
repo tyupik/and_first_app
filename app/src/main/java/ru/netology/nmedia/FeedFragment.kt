@@ -2,11 +2,9 @@ package ru.netology.nmedia
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -18,7 +16,7 @@ import ru.netology.nmedia.NewPostFragment.Companion.textArg
 import ru.netology.nmedia.adapter.PostAdapter
 import ru.netology.nmedia.adapter.PostAdapterClickListener
 import ru.netology.nmedia.databinding.FragmentFeedBinding
-import ru.netology.nmedia.repository.PostRepositoryImpl
+import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.viewmodel.PostViewModel
 
 class FeedFragment : Fragment() {
@@ -37,6 +35,16 @@ class FeedFragment : Fragment() {
         )
         val adapter = PostAdapter(
             object : PostAdapterClickListener {
+
+                override fun onAttachmentClicked(post: Post) {
+                    findNavController().navigate(
+                        R.id.action_feedFragment_to_attach_viewer,
+                        Bundle().apply {
+                            textArg = post.attachment?.url
+                        }
+                    )
+                }
+
                 override fun onEditClicked(post: Post) {
                     findNavController().navigate(
                         R.id.action_feedFragment_to_newPostFragment,
@@ -70,7 +78,7 @@ class FeedFragment : Fragment() {
                 }
 
             },
-            "${BuildConfig.BASE_URL}/avatars/"
+            "${BuildConfig.BASE_URL}"
 
         )
 

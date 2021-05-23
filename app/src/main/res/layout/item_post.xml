@@ -69,46 +69,57 @@
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:autoLink="web"
-        app:layout_constraintBottom_toTopOf="@id/video"
+        app:layout_constraintBottom_toTopOf="@id/attachment"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/barrier"
         tools:text="@sample/posts.json/data/content" />
 
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/video_group"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:visibility="gone"
-        android:clickable="true"
-        app:constraint_referenced_ids="video, play"
-        android:focusable="true" />
-
     <ImageView
-        android:id="@+id/video"
-        android:layout_width="0dp"
-        android:layout_height="250dp"
-        app:layout_constraintBottom_toTopOf="@id/barrier2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:id="@+id/attachment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="@id/textTv"
+        app:layout_constraintStart_toStartOf="@id/textTv"
         app:layout_constraintTop_toBottomOf="@id/textTv"
-        app:srcCompat="@drawable/preview" />
-    <ImageView
-        android:id="@+id/play"
-        android:layout_width="0dp"
-        android:layout_height="80dp"
-        app:layout_constraintTop_toTopOf="@id/video"
-        app:layout_constraintBottom_toBottomOf="@id/video"
-        app:layout_constraintStart_toStartOf="@id/video"
-        app:layout_constraintEnd_toEndOf="@id/video"
-        app:srcCompat="@drawable/ic_baseline_play_circle_outline_24" />
+        app:layout_constraintBottom_toTopOf="@id/barrier2"
+        app:srcCompat="@drawable/ic_camera_24dp"
+        android:visibility="invisible"/>
+
+<!--    <androidx.constraintlayout.widget.Group-->
+<!--        android:id="@+id/video_group"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="0dp"-->
+<!--        android:visibility="gone"-->
+<!--        android:clickable="true"-->
+<!--        app:constraint_referenced_ids="video, play"-->
+<!--        android:focusable="true" />-->
+
+<!--    <ImageView-->
+<!--        android:id="@+id/video"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="250dp"-->
+<!--        app:layout_constraintBottom_toTopOf="@id/barrier2"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/textTv"-->
+<!--        app:srcCompat="@drawable/preview" />-->
+<!--    <ImageView-->
+<!--        android:id="@+id/play"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="80dp"-->
+<!--        app:layout_constraintTop_toTopOf="@id/video"-->
+<!--        app:layout_constraintBottom_toBottomOf="@id/video"-->
+<!--        app:layout_constraintStart_toStartOf="@id/video"-->
+<!--        app:layout_constraintEnd_toEndOf="@id/video"-->
+<!--        app:srcCompat="@drawable/ic_baseline_play_circle_outline_24" />-->
 
     <androidx.constraintlayout.widget.Barrier
         android:id="@+id/barrier2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:barrierDirection="bottom"
-        app:constraint_referenced_ids="textTv, video_group" />
+        app:constraint_referenced_ids="textTv" />
 
 
     <TextView

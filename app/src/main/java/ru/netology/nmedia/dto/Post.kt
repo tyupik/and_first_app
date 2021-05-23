@@ -1,6 +1,7 @@
-package ru.netology.nmedia
+package ru.netology.nmedia.dto
 
 import android.widget.ImageView
+import ru.netology.nmedia.enumiration.AttachmentType
 
 data class Post(
     val id: Long,
@@ -11,5 +12,10 @@ data class Post(
     val likedByMe: Boolean = false,
     val likeCount: Int = 0,
     val shareCount: Int = 0,
-    val video: String? = null
+    val attachment: Attachment? = null,
 )
+data class Attachment(
+    val url: String,
+    val type: AttachmentType,
+)
+

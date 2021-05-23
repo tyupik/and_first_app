@@ -1,5 +1,7 @@
 package ru.netology.nmedia.adapter
 
+import android.opengl.Visibility
+import android.view.View
 import android.widget.PopupMenu
 import androidx.constraintlayout.widget.Group
 import androidx.recyclerview.widget.RecyclerView
@@ -7,8 +9,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.MultiTransformation
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.load.resource.bitmap.FitCenter
-import kotlinx.android.synthetic.main.activity_main.view.*
-import ru.netology.nmedia.Post
+import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.ItemPostBinding
 import kotlin.math.floor
@@ -20,9 +21,6 @@ class PostViewHolder(
 ) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(post: Post) {
-        if (!post.video.isNullOrEmpty()){
-            binding.videoGroup.visibility = Group.VISIBLE
-        }
         binding.apply {
             avatarIv.setImageResource(R.drawable.avatar)
             authorTv.text = post.author
@@ -56,14 +54,37 @@ class PostViewHolder(
                     }
                 }.show()
             }
+            attachment.setOnClickListener  {
+                listener.onAttachmentClicked(post)
+            }
             Glide.with(binding.avatarIv)
-                .load("$url/${post.authorAvatar}")
+                .load("$url/avatars/${post.authorAvatar}")
                 .placeholder(R.drawable.ic_loading_100dp)
                 .error(R.drawable.ic_error_100dp)
                 .timeout(10_000)
                 .transform(MultiTransformation(FitCenter(), CircleCrop()))
                 .into(binding.avatarIv)
+
+            if(!post.attachment?.url.isNullOrEmpty()) {
+                binding.attachment.visibility = View.VISIBLE
+                Glide.with(binding.attachment)
+                    .load("$url/media/${post.attachment?.url}")
+                    .error(R.drawable.ic_error_100dp)
+                    .timeout(10_000)
+                    .into(binding.attachment)
+            } else {
+                binding.attachment.visibility = View.GONE
+            }
         }
+//        if (post.attachment != null) {
+//            binding.attachment.visibility = View.VISIBLE
+//            post.attachment.url
+//            Glide.with(binding.attachment)
+//                .load("$url/media/${post.attachment.url}")
+//                .error(R.drawable.ic_error_100dp)
+//                .timeout(10_000)
+//                .into(binding.attachment)
+//        }
     }
 
     private fun setRoundCount(value: Int): String {
