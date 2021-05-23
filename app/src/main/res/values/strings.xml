@@ -22,6 +22,4 @@
     <string name="remove">Remove</string>
     <string name="description_select_photo">Select photo</string>
     <string name="description_take_photo">Take photo</string>
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>
