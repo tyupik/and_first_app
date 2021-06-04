@@ -11,6 +11,7 @@ import ru.netology.nmedia.enumiration.AttachmentType
 data class PostEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long,
+    val authorId: Long,
     val author: String,
     val authorAvatar: String,
     val content: String,
@@ -24,6 +25,7 @@ data class PostEntity(
     fun toDto() =
         Post(
             id = id,
+            authorId = authorId,
             author = author,
             authorAvatar = authorAvatar,
             content = content,
@@ -31,13 +33,14 @@ data class PostEntity(
             likedByMe = likedByMe,
             likeCount = likeCount,
             shareCount = shareCount,
-            attachment?.toDto()
+            attachment?.toDto(),
         )
 
     companion object {
         fun fromDto(dto: Post) =
             PostEntity(
                 dto.id,
+                dto.authorId,
                 dto.author,
                 dto.authorAvatar,
                 dto.content,

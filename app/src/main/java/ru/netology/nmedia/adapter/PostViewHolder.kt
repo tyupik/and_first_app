@@ -29,6 +29,7 @@ class PostViewHolder(
             like.isChecked = post.likedByMe
             like.text = setRoundCount(post.likeCount)
             share.text = setRoundCount(post.shareCount)
+            menu.visibility = if (post.ownedByMe) View.VISIBLE else View.INVISIBLE
 
             like.setOnClickListener {
                 listener.onLikeClicked(post)
@@ -39,6 +40,7 @@ class PostViewHolder(
             menu.setOnClickListener {
                 PopupMenu(it.context, it).apply {
                     inflate(R.menu.options_post)
+                    menu.setGroupVisible(R.id.owned, post.ownedByMe)
                     setOnMenuItemClickListener { menuItem ->
                         when (menuItem.itemId) {
                             R.id.remove -> {
@@ -76,15 +78,6 @@ class PostViewHolder(
                 binding.attachment.visibility = View.GONE
             }
         }
-//        if (post.attachment != null) {
-//            binding.attachment.visibility = View.VISIBLE
-//            post.attachment.url
-//            Glide.with(binding.attachment)
-//                .load("$url/media/${post.attachment.url}")
-//                .error(R.drawable.ic_error_100dp)
-//                .timeout(10_000)
-//                .into(binding.attachment)
-//        }
     }
 
     private fun setRoundCount(value: Int): String {

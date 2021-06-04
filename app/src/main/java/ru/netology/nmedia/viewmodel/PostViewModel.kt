@@ -5,10 +5,12 @@ import android.net.Uri
 import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.SingleLiveEvent
+import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.db.AppDb
 import ru.netology.nmedia.dto.MediaUpload
 import ru.netology.nmedia.model.FeedModel
@@ -20,13 +22,14 @@ import java.io.File
 
 private val defaultPost = Post(
     id = 0L,
+    authorId = 0L,
     author = "",
     authorAvatar = "1",
     content = "",
     published = "",
     likedByMe = false,
     likeCount = 0,
-    shareCount = 0
+    shareCount = 0,
 )
 
 private val noPhoto = PhotoModel()
@@ -35,11 +38,16 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: PostRepository =
         PostRepositoryImpl(AppDb.getInstance(context = application).postDao())
 
-    //    val data: LiveData<FeedModel> = repository.data.map(::FeedModel)
-    val data: LiveData<FeedModel> = repository.data
-        .map(::FeedModel)
-        .catch { e ->
-            e.printStackTrace()
+    val data: LiveData<FeedModel> = AppAuth.getInstance()
+        .authStateFlow
+        .flatMapLatest { (myId, _) ->
+            repository.data
+                .map { posts ->
+                    FeedModel(
+                        posts.map { it.copy(ownedByMe = it.authorId == myId) },
+                        posts.isEmpty()
+                    )
+                }
         }
         .asLiveData(Dispatchers.Default)
 
@@ -56,7 +64,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     val photo: LiveData<PhotoModel>
         get() = _photo
 
-    private var newPostsCollection : List<Post>? = null
+    private var newPostsCollection: List<Post>? = null
 
     init {
         loadPosts()
@@ -162,7 +170,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         newPostsCollection = posts
     }
 
-    fun addNewPosts() : List<Post>?{
+    fun addNewPosts(): List<Post>? {
         return newPostsCollection
     }
 
