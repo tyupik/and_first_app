@@ -10,6 +10,8 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson
 import ru.netology.nmedia.R
+import ru.netology.nmedia.auth.AppAuth
+import ru.netology.nmedia.auth.RecipientInfo
 import kotlin.random.Random
 
 
@@ -34,17 +36,39 @@ class FCMService : FirebaseMessagingService() {
         }
     }
     override fun onMessageReceived(message: RemoteMessage) {
-        message.data[action]?.let {
-            try {
-                when (Action.valueOf(it)) {
-                    Action.LIKE -> handleLike( gson.fromJson( message.data[content], Like::class.java))
-                    Action.NEWPOST -> handleNewPost(gson.fromJson(message.data[content], NewPost::class.java))
-                }
-            } catch (e: IllegalArgumentException) {
-                updateApp()
-            }
+//        message.data[action]?.let {
+//            try {
+//                when (Action.valueOf(it)) {
+//                    Action.LIKE -> handleLike( gson.fromJson( message.data[content], Like::class.java))
+//                    Action.NEWPOST -> handleNewPost(gson.fromJson(message.data[content], NewPost::class.java))
+//                }
+//            } catch (e: IllegalArgumentException) {
+//                updateApp()
+//            }
+//        }
+//        println(Gson().toJson(message))
+        val msg = gson.fromJson(message.data["content"], RecipientInfo::class.java)
+        val myid = AppAuth.getInstance().authStateFlow.value.id
+
+        if (msg.recipientId == null){
+            //show notify
+            notification(this, msg.content)
         }
-        println(Gson().toJson(message))
+
+        if (msg.recipientId == myid.toString()){
+            //show notify
+            notification(this, msg.content)
+        }
+
+        if (msg.recipientId == "0" && msg.recipientId != myid.toString()){
+            //send again
+            AppAuth.getInstance().sendPushToken()
+        }
+
+        if (msg.recipientId != "0" && msg.recipientId != myid.toString()){
+            //send again
+            AppAuth.getInstance().sendPushToken()
+        }
     }
 
     override fun onNewToken(token: String) {
@@ -93,6 +117,18 @@ class FCMService : FirebaseMessagingService() {
             )
             .setContentText(content.content)
             .setStyle(NotificationCompat.BigTextStyle())
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .build()
+
+        NotificationManagerCompat.from(this)
+            .notify(Random.nextInt(100_000), notification)
+    }
+
+    private fun notification(context: Context, msg: String) {
+        val notification = NotificationCompat.Builder(this, channelId)
+            .setSmallIcon(R.drawable.avatar)
+            .setContentTitle(getString(R.string.new_message))
+            .setContentText(msg)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .build()
 

@@ -1,6 +1,6 @@
 package ru.netology.nmedia.data
 
-import ru.netology.nmedia.api.PostApi
+import ru.netology.nmedia.api.Api
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.auth.AuthState
 import ru.netology.nmedia.data.model.LoggedInUser
@@ -33,7 +33,7 @@ class LoginRepository(val dataSource: LoginDataSource) {
 
     suspend fun login(username: String, password: String): AuthState {
         // handle login
-        val response = PostApi.retrofitService.updateUser(username, password)
+        val response = Api.retrofitService.updateUser(username, password)
         if (!response.isSuccessful) {
             throw ApiError(response.code(), response.message())
         }

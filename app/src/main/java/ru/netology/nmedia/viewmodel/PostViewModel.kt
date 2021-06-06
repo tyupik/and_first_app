@@ -3,6 +3,7 @@ package ru.netology.nmedia.viewmodel
 import android.app.Application
 import android.net.Uri
 import androidx.lifecycle.*
+import com.google.firebase.installations.FirebaseInstallations
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapLatest
@@ -68,6 +69,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     init {
         loadPosts()
+        FirebaseInstallations.getInstance().getToken(true)
     }
 
     val newerCount: LiveData<Int> = data.switchMap {

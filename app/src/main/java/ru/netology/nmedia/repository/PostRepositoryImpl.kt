@@ -5,12 +5,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import ru.netology.nmedia.dto.Post
-import ru.netology.nmedia.api.PostApi
+import ru.netology.nmedia.api.Api
 import ru.netology.nmedia.dao.PostDao
-import ru.netology.nmedia.dto.Attachment
-import ru.netology.nmedia.dto.Media
-import ru.netology.nmedia.dto.MediaUpload
+import ru.netology.nmedia.dto.*
 import ru.netology.nmedia.entity.PostEntity
 import ru.netology.nmedia.entity.toDto
 import ru.netology.nmedia.entity.toEntity
@@ -32,7 +29,7 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
     override fun getNewerCount(id: Long): Flow<Int> = flow {
         while (true) {
             delay(10_000L)
-            val response = PostApi.retrofitService.getNewer(id)
+            val response = Api.retrofitService.getNewer(id)
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
@@ -47,7 +44,7 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
     override suspend fun likeById(post: Post) {
         if (post.likedByMe) {
             try {
-                val response = PostApi.retrofitService.dislikeById(post.id)
+                val response = Api.retrofitService.dislikeById(post.id)
                 if (!response.isSuccessful) {
                     throw ApiError(response.code(), response.message())
                 }
@@ -60,7 +57,7 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
             }
         } else {
             try {
-                val response = PostApi.retrofitService.likeById(post.id)
+                val response = Api.retrofitService.likeById(post.id)
                 if (!response.isSuccessful) {
                     throw ApiError(response.code(), response.message())
                 }
@@ -80,7 +77,7 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
 
     override suspend fun removeById(id: Long) {
         try {
-            val response = PostApi.retrofitService.removeById(id)
+            val response = Api.retrofitService.removeById(id)
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
@@ -94,7 +91,7 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
 
     override suspend fun save(post: Post) {
         try {
-            val response = PostApi.retrofitService.save(post)
+            val response = Api.retrofitService.save(post)
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
@@ -109,7 +106,7 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
 
     override suspend fun getAllAsync() {
         try {
-            val response = PostApi.retrofitService.getAll()
+            val response = Api.retrofitService.getAll()
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
@@ -142,12 +139,26 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
                 "file", upload.file.name, upload.file.asRequestBody()
             )
 
-            val response = PostApi.retrofitService.upload(media)
+            val response = Api.retrofitService.upload(media)
             if(!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
 
             return  response.body() ?: throw ApiError(response.code(), response.message())
+        } catch (e: IOException) {
+            throw NetworkError
+        } catch (e: Exception) {
+            throw UnknownError
+        }
+    }
+
+    suspend fun sendToken(token: String) {
+        try {
+            val response = Api.retrofitService.save(PushToken(token))
+
+            if (!response.isSuccessful) {
+                throw ApiError(response.code(), response.message())
+            }
         } catch (e: IOException) {
             throw NetworkError
         } catch (e: Exception) {
