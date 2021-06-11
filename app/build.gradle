@@ -66,6 +66,7 @@ dependencies {
     def coroutines_version = "1.4.3"
     def coordinatorlayout_version = "1.1.0"
     def imagepicker_version = "1.7.1"
+    def workmanager_version = "2.5.0"
 
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
@@ -100,6 +101,7 @@ dependencies {
     implementation "androidx.coordinatorlayout:coordinatorlayout:$coordinatorlayout_version"
     implementation "com.github.dhaval2404:imagepicker:$imagepicker_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:$coroutines_version"
+    implementation "androidx.work:work-runtime-ktx:$workmanager_version"
 
 
 }

@@ -1,5 +1,8 @@
 package ru.netology.nmedia.repository
 
+import android.net.Uri
+import androidx.core.net.toFile
+import androidx.core.net.toUri
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
@@ -7,8 +10,10 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import ru.netology.nmedia.api.Api
 import ru.netology.nmedia.dao.PostDao
+import ru.netology.nmedia.dao.PostWorkDao
 import ru.netology.nmedia.dto.*
 import ru.netology.nmedia.entity.PostEntity
+import ru.netology.nmedia.entity.PostWorkEntity
 import ru.netology.nmedia.entity.toDto
 import ru.netology.nmedia.entity.toEntity
 import ru.netology.nmedia.enumiration.AttachmentType
@@ -19,7 +24,10 @@ import ru.netology.nmedia.error.UnknownError
 import java.io.IOException
 
 
-class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
+class PostRepositoryImpl(
+    private val dao: PostDao,
+    private val postWorkDao: PostWorkDao
+) : PostRepository {
 
 
     override val data = dao.getAll()
@@ -122,7 +130,8 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
     override suspend fun saveWithAttachment(post: Post, upload: MediaUpload) {
         try {
             val media = upload(upload)
-            val postWithAttachment = post.copy(attachment = Attachment(media.id, AttachmentType.IMAGE))
+            val postWithAttachment =
+                post.copy(attachment = Attachment(media.id, AttachmentType.IMAGE))
             save(postWithAttachment)
         } catch (e: AppError) {
             throw e
@@ -140,11 +149,11 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
             )
 
             val response = Api.retrofitService.upload(media)
-            if(!response.isSuccessful) {
+            if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
 
-            return  response.body() ?: throw ApiError(response.code(), response.message())
+            return response.body() ?: throw ApiError(response.code(), response.message())
         } catch (e: IOException) {
             throw NetworkError
         } catch (e: Exception) {
@@ -161,6 +170,46 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
             }
         } catch (e: IOException) {
             throw NetworkError
+        } catch (e: Exception) {
+            throw UnknownError
+        }
+    }
+
+    override suspend fun saveWork(post: Post, upload: MediaUpload?): Long {
+        try {
+            val entity = PostWorkEntity.fromDto(post).apply {
+                if (upload != null) {
+                    this.uri = upload.file.toUri().toString()
+                }
+            }
+            return postWorkDao.insert(entity)
+        } catch (e: Exception) {
+            throw UnknownError
+        }
+    }
+
+    override suspend fun processWork(id: Long) {
+        try {
+            val entity = postWorkDao.getById(id)
+
+            val post = Post(
+                id = entity.postId,
+                authorId = entity.authorId,
+                content = entity.content,
+                likedByMe = entity.likedByMe,
+                authorAvatar = entity.authorAvatar,
+                ownedByMe = true,
+                likeCount = entity.likeCount,
+                author = entity.author,
+                published = entity.published
+            )
+            entity.authorId
+            if (entity.uri != null) {
+                val upload = MediaUpload(Uri.parse(entity.uri).toFile())
+                saveWithAttachment(post, upload)
+            } else {
+                save(post)
+            }
         } catch (e: Exception) {
             throw UnknownError
         }
