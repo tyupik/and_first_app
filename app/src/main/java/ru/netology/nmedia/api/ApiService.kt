@@ -17,31 +17,31 @@ import java.util.concurrent.TimeUnit
 
 private const val BASE_URL = "${BuildConfig.BASE_URL}/api/slow/"
 
-private val logging = HttpLoggingInterceptor().apply {
-    if (BuildConfig.DEBUG) {
-        level = HttpLoggingInterceptor.Level.BODY
-    }
-}
-
-private val client = OkHttpClient.Builder()
-    .addInterceptor(logging)
-    .addInterceptor { chain ->
-        AppAuth.getInstance().authStateFlow.value.token?.let { token ->
-            val newRequest = chain.request().newBuilder()
-                .addHeader("Authorization", token)
-                .build()
-            return@addInterceptor chain.proceed(newRequest)
-        }
-        chain.proceed(chain.request())
-    }
-    .connectTimeout(30, TimeUnit.SECONDS)
-    .build()
-
-private val retrofit = Retrofit.Builder()
-    .addConverterFactory(GsonConverterFactory.create())
-    .baseUrl(BASE_URL)
-    .client(client)
-    .build()
+//private val logging = HttpLoggingInterceptor().apply {
+//    if (BuildConfig.DEBUG) {
+//        level = HttpLoggingInterceptor.Level.BODY
+//    }
+//}
+//
+//private val client = OkHttpClient.Builder()
+//    .addInterceptor(logging)
+//    .addInterceptor { chain ->
+//        AppAuth.getInstance().authStateFlow.value.token?.let { token ->
+//            val newRequest = chain.request().newBuilder()
+//                .addHeader("Authorization", token)
+//                .build()
+//            return@addInterceptor chain.proceed(newRequest)
+//        }
+//        chain.proceed(chain.request())
+//    }
+//    .connectTimeout(30, TimeUnit.SECONDS)
+//    .build()
+//
+//private val retrofit = Retrofit.Builder()
+//    .addConverterFactory(GsonConverterFactory.create())
+//    .baseUrl(BASE_URL)
+//    .client(client)
+//    .build()
 
 interface PostApiService {
     @POST("users/push-tokens")
@@ -76,8 +76,8 @@ interface PostApiService {
 
 }
 
-object Api {
-    val retrofitService: PostApiService by lazy {
-        retrofit.create(PostApiService::class.java)
-    }
-}
+//object Api {
+//    val retrofitService: PostApiService by lazy {
+//        retrofit.create(PostApiService::class.java)
+//    }
+//}

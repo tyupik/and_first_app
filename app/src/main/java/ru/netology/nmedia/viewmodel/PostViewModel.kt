@@ -1,29 +1,29 @@
 package ru.netology.nmedia.viewmodel
 
-import android.app.Application
 import android.net.Uri
 import androidx.core.net.toFile
 import androidx.lifecycle.*
 import androidx.work.*
 import com.google.firebase.installations.FirebaseInstallations
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.SingleLiveEvent
 import ru.netology.nmedia.auth.AppAuth
-import ru.netology.nmedia.db.AppDb
 import ru.netology.nmedia.dto.MediaUpload
+import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.model.FeedModel
 import ru.netology.nmedia.model.FeedModelState
 import ru.netology.nmedia.model.PhotoModel
 import ru.netology.nmedia.repository.PostRepository
-import ru.netology.nmedia.repository.PostRepositoryImpl
 import ru.netology.nmedia.work.RemovePostWorker
 import ru.netology.nmedia.work.SavePostWorker
 import java.io.File
+import javax.inject.Inject
 
 private val defaultPost = Post(
     id = 0L,
@@ -39,16 +39,16 @@ private val defaultPost = Post(
 
 private val noPhoto = PhotoModel()
 
-class PostViewModel(application: Application) : AndroidViewModel(application) {
-    private val repository: PostRepository =
-        PostRepositoryImpl(
-            AppDb.getInstance(context = application).postDao(),
-            AppDb.getInstance(context = application).postWorkDao()
-        )
-    private val workManager: WorkManager =
-        WorkManager.getInstance(application)
+@HiltViewModel
+@ExperimentalCoroutinesApi
+class PostViewModel @Inject constructor(
+    private val repository: PostRepository,
+    private val workManager: WorkManager,
+    auth: AppAuth
+) : ViewModel() {
 
-    val data: LiveData<FeedModel> = AppAuth.getInstance()
+
+    val data: LiveData<FeedModel> = auth
         .authStateFlow
         .flatMapLatest { (myId, _) ->
             repository.data
@@ -134,12 +134,11 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
             val constraints = Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build()
-            val request = OneTimeWorkRequestBuilder <RemovePostWorker>()
+            val request = OneTimeWorkRequestBuilder<RemovePostWorker>()
                 .setInputData(data)
                 .setConstraints(constraints)
                 .build()
             workManager.enqueue(request)
-
 
 
         }
@@ -154,7 +153,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun save() {
-        edited.value?.let { post->
+        edited.value?.let { post ->
             _postCreated.value = Unit
             viewModelScope.launch {
                 try {

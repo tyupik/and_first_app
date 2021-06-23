@@ -1,10 +1,11 @@
 package ru.netology.nmedia.data
 
-import ru.netology.nmedia.api.Api
+import ru.netology.nmedia.api.PostApiService
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.auth.AuthState
 import ru.netology.nmedia.data.model.LoggedInUser
 import ru.netology.nmedia.error.ApiError
+import javax.inject.Inject
 
 /**
  * Class that requests authentication and user information from the remote data source and
@@ -13,6 +14,11 @@ import ru.netology.nmedia.error.ApiError
 
 class LoginRepository(val dataSource: LoginDataSource) {
 
+    @Inject
+    lateinit var auth: AppAuth
+
+    @Inject
+    lateinit var service: PostApiService
     // in-memory cache of the loggedInUser object
     var user: LoggedInUser? = null
         private set
@@ -33,13 +39,13 @@ class LoginRepository(val dataSource: LoginDataSource) {
 
     suspend fun login(username: String, password: String): AuthState {
         // handle login
-        val response = Api.retrofitService.updateUser(username, password)
+        val response = service.updateUser(username, password)
         if (!response.isSuccessful) {
             throw ApiError(response.code(), response.message())
         }
 
         val body = response.body() ?: throw ApiError(response.code(), response.message())
-        AppAuth.getInstance().setAuth(body.id, body.token)
+        auth.setAuth(body.id, body.token)
         return body
 //        val result = dataSource.login(username, password)
 //
