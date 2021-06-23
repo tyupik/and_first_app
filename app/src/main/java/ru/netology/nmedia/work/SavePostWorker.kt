@@ -8,6 +8,7 @@ import ru.netology.nmedia.repository.PostRepository
 import ru.netology.nmedia.repository.PostRepositoryImpl
 
 class SavePostWorker(
+    private val repository: PostRepository,
     applicationContext: Context,
     params: WorkerParameters
 ) : CoroutineWorker(applicationContext, params) {
@@ -21,15 +22,9 @@ class SavePostWorker(
             return Result.failure()
         }
 
-        val dbPWD = AppDb.getInstance(context = applicationContext).postWorkDao()
-        val repository: PostRepository =
-            PostRepositoryImpl(
-                AppDb.getInstance(context = applicationContext).postDao(),
-                dbPWD,
-            )
         return try {
             repository.processWork(id)
-            dbPWD.removeById(id)
+//            dbPWD.removeById(id)
             Result.success()
         } catch (e: Exception) {
             Result.retry()

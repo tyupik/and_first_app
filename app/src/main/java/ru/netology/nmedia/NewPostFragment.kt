@@ -11,11 +11,13 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.AndroidUtils.hideKeyboard
 import ru.netology.nmedia.databinding.FragmentNewPostBinding
 import ru.netology.nmedia.viewmodel.PostViewModel
 import java.io.File
 
+@AndroidEntryPoint
 class NewPostFragment : Fragment() {
     private val photoRequestCode = 1
     private val cameraRequestCode = 2

@@ -17,9 +17,12 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
+import dagger.hilt.android.lifecycle.HiltViewModel
 import ru.netology.nmedia.AndroidUtils.hideKeyboard
 
 import ru.netology.nmedia.R
+import javax.inject.Inject
+
 
 class fragment_login : Fragment() {
 

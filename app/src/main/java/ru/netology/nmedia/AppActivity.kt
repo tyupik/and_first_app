@@ -10,12 +10,31 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import com.google.firebase.installations.FirebaseInstallations
 import com.google.firebase.messaging.FirebaseMessaging
+import dagger.hilt.EntryPoint
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.NewPostFragment.Companion.textArg
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.viewmodel.AuthViewModel
+import javax.inject.Inject
 
-class MainActivity : AppCompatActivity(R.layout.activity_main) {
+@AndroidEntryPoint
+class AppActivity
+//@Inject constructor
+    (
+//    private val auth: AppAuth,
+//    private val firebaseInstallations: FirebaseInstallations,
+//    private val firebaseMessaging: FirebaseMessaging,
+) : AppCompatActivity(R.layout.activity_main) {
     private val viewModel: AuthViewModel by viewModels()
+
+
+    @Inject
+    lateinit var auth: AppAuth
+    @Inject
+    lateinit var firebaseInstallations: FirebaseInstallations
+    @Inject
+    lateinit var firebaseMessaging: FirebaseMessaging
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -40,7 +59,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             invalidateOptionsMenu()
         }
 
-        FirebaseInstallations.getInstance().id.addOnCompleteListener { task ->
+        firebaseInstallations.id.addOnCompleteListener { task ->
             if (!task.isSuccessful) {
                 println("some stuff happened: ${task.exception}")
                 return@addOnCompleteListener
@@ -50,7 +69,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             println(token)
         }
 
-        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+        firebaseMessaging.token.addOnCompleteListener { task ->
             if (!task.isSuccessful) {
                 println("some stuff happened: ${task.exception}")
                 return@addOnCompleteListener
@@ -73,17 +92,18 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.signin -> {
-                AppAuth.getInstance().setAuth(5, "x-token")
-                findNavController(R.id.nav_host_fragment).navigate(R.id.action_feedFragment_to_fragment_login)
+                auth.setAuth(5, "x-token")
+                Toast.makeText(this, "АВТОРИЗАЦИЯ", Toast.LENGTH_SHORT).show()
+//                findNavController(R.id.nav_host_fragment).navigate(R.id.action_feedFragment_to_fragment_login)
                 true
             }
             R.id.signup -> {
-                AppAuth.getInstance().setAuth(5, "x-token")
+                auth.setAuth(5, "x-token")
                 Toast.makeText(this, "Потом", Toast.LENGTH_SHORT).show()
                 true
             }
             R.id.signout -> {
-                AppAuth.getInstance().removeAuth()
+                auth.removeAuth()
                 Toast.makeText(this, "Выход", Toast.LENGTH_SHORT).show()
                 true
             }
