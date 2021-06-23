@@ -9,6 +9,7 @@ import androidx.core.app.NotificationManagerCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.R
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.auth.RecipientInfo
@@ -16,19 +17,16 @@ import javax.inject.Inject
 import kotlin.random.Random
 
 
-class FCMService
-@Inject constructor
-    (
-    private val auth: AppAuth
-) : FirebaseMessagingService() {
+@AndroidEntryPoint
+class FCMService() : FirebaseMessagingService() {
     private val action = "action"
     private val content = "content"
     private val channelId = "remote"
     private val gson = Gson()
 
 
-//    @Inject
-//    lateinit var auth: AppAuth
+    @Inject
+    lateinit var auth: AppAuth
 
 
     override fun onCreate() {
