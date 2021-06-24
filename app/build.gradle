@@ -70,6 +70,7 @@ dependencies {
     def imagepicker_version = "1.7.1"
     def workmanager_version = "2.5.0"
     def hilt_work_version = "1.0.0"
+    def paging_version = "3.0.0"
 
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
@@ -108,6 +109,7 @@ dependencies {
     implementation "com.google.dagger:hilt-android:$hilt_version"
     kapt "com.google.dagger:hilt-compiler:$hilt_version"
     implementation "androidx.hilt:hilt-work:$hilt_work_version"
+    implementation "androidx.paging:paging-runtime-ktx:$paging_version"
 
 
 }

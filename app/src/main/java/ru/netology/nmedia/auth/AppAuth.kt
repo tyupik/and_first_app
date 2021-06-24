@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import ru.netology.nmedia.api.PostApiService
+import ru.netology.nmedia.api.ApiService
 import ru.netology.nmedia.api.token
 import ru.netology.nmedia.dto.PushToken
 import javax.inject.Inject
@@ -50,7 +50,7 @@ class AppAuth @Inject constructor(
     @InstallIn(SingletonComponent::class)
     @EntryPoint
     interface AppAuthEntryPoint {
-        fun apiService(): PostApiService
+        fun apiService(): ApiService
     }
 
     fun sendPushToken(token: String? = null) {
@@ -65,7 +65,7 @@ class AppAuth @Inject constructor(
        }
     }
 
-    private fun getApiService(context: Context): PostApiService {
+    private fun getApiService(context: Context): ApiService {
         val hiltEntryPoint = EntryPointAccessors.fromApplication(
             context,
             AppAuthEntryPoint::class.java

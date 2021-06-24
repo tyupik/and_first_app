@@ -6,6 +6,7 @@ import androidx.work.WorkerParameters
 import ru.netology.nmedia.db.AppDb
 import ru.netology.nmedia.repository.PostRepository
 import ru.netology.nmedia.repository.PostRepositoryImpl
+import javax.inject.Inject
 
 class RemovePostWorker(
     private val repository: PostRepository,
@@ -15,6 +16,9 @@ class RemovePostWorker(
     companion object {
         const val postKey = "post"
     }
+
+    @Inject
+    lateinit var appDbPWD: AppDb
 
     override suspend fun doWork(): Result {
         val id = inputData.getLong(postKey, 0L)
@@ -30,7 +34,7 @@ class RemovePostWorker(
 //            )
         return try {
             repository.removeById(id)
-//            appDbPWD.removeById(id)
+            appDbPWD.postWorkDao().removeById(id)
             Result.success()
         } catch (e: Exception) {
             Result.retry()

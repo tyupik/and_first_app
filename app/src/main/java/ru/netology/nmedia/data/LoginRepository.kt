@@ -1,6 +1,6 @@
 package ru.netology.nmedia.data
 
-import ru.netology.nmedia.api.PostApiService
+import ru.netology.nmedia.api.ApiService
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.auth.AuthState
 import ru.netology.nmedia.data.model.LoggedInUser
@@ -18,7 +18,7 @@ class LoginRepository(val dataSource: LoginDataSource) {
     lateinit var auth: AppAuth
 
     @Inject
-    lateinit var service: PostApiService
+    lateinit var service: ApiService
     // in-memory cache of the loggedInUser object
     var user: LoggedInUser? = null
         private set

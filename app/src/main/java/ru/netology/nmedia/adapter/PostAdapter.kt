@@ -2,6 +2,7 @@ package ru.netology.nmedia.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import ru.netology.nmedia.dto.Post
@@ -11,7 +12,7 @@ import ru.netology.nmedia.databinding.ItemPostBinding
 class PostAdapter(
     private val listener: PostAdapterClickListener,
     private val url: String
-) : ListAdapter<Post, PostViewHolder>(PostDiffItemCallBack) {
+) : PagingDataAdapter<Post, PostViewHolder>(PostDiffItemCallBack) {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder =
@@ -26,7 +27,7 @@ class PostAdapter(
         )
 
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
-        val post = getItem(position)
+        val post = getItem(position) ?: return
         holder.bind(post)
     }
 
