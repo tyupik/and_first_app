@@ -9,10 +9,13 @@ import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.paging.LoadState
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_feed.*
+import kotlinx.coroutines.flow.collectLatest
 import ru.netology.nmedia.NewPostFragment.Companion.textArg
 import ru.netology.nmedia.adapter.PostAdapter
 import ru.netology.nmedia.adapter.PostAdapterClickListener
@@ -25,6 +28,7 @@ class FeedFragment : Fragment() {
     val viewModel: PostViewModel by viewModels(
         ownerProducer = ::requireParentFragment,
     )
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -87,7 +91,7 @@ class FeedFragment : Fragment() {
 
         binding.list.adapter = adapter
 
-        binding.swipeRefresh.setOnRefreshListener{
+        binding.swipeRefresh.setOnRefreshListener {
             viewModel.loadPosts()
             swipe_refresh.isRefreshing = false
         }
@@ -96,46 +100,60 @@ class FeedFragment : Fragment() {
             binding.errorGroup.isVisible = false
             binding.progress.isVisible = state.loading
             binding.swipeRefresh.isRefreshing = state.refreshing
-            if(state.error) {
+            if (state.error) {
 //                binding.errorGroup.isVisible = state.error
                 Snackbar.make(binding.root, R.string.error_loading, Snackbar.LENGTH_LONG)
-                    .setAction(R.string.retry_loading) {viewModel.loadPosts()}
+                    .setAction(R.string.retry_loading) { viewModel.loadPosts() }
                     .show()
             }
         })
 
-        viewModel.data.observe(viewLifecycleOwner, {state ->
-            binding.emptyText.isVisible = state.empty
+        lifecycleScope.launchWhenCreated {
 
-            if (adapter.itemCount == 0){
-                adapter.submitList(state.posts)
+            viewModel.data.collectLatest {
+                adapter.submitData(it)
             }
-
-            if  (state.posts.size == adapter.itemCount){
-                adapter.submitList(state.posts)
-            } else{
-                binding.newpostsBtn.isGone = false
-                viewModel.updateNewPostsList(state.posts)
-            }
-        })
-
-        viewModel.newerCount.observe(viewLifecycleOwner) { state ->
-
-            println(state)
+//            viewModel.data.observe(viewLifecycleOwner, { state ->
+//                binding.emptyText.isVisible = state.empty
+//
+//                if (adapter.itemCount == 0) {
+//                    adapter.submitList(state.posts)
+//                }
+//
+//                if (state.posts.size == adapter.itemCount) {
+//                    adapter.submitList(state.posts)
+//                } else {
+//                    binding.newpostsBtn.isGone = false
+//                    viewModel.updateNewPostsList(state.posts)
+//                }
+//            })
         }
+
+        lifecycleScope.launchWhenCreated {
+            adapter.loadStateFlow.collectLatest { states ->
+                binding.swipeRefresh.isRefreshing = states.append is LoadState.Loading
+                        || states.prepend is LoadState.Loading
+                        || states.refresh is LoadState.Loading
+            }
+        }
+
+//        viewModel.newerCount.observe(viewLifecycleOwner) { state ->
+//
+//            println(state)
+//        }
 
         binding.retryButton.setOnClickListener {
             viewModel.refreshPosts()
         }
 
-        binding.newpostsBtn.setOnClickListener {
-            binding.newpostsBtn.isGone = true
-            adapter.submitList(viewModel.addNewPosts())
-            binding.list.postDelayed(Runnable {
-                binding.list.smoothScrollToPosition(0)
-            }, 700)
-
-        }
+//        binding.newpostsBtn.setOnClickListener {
+//            binding.newpostsBtn.isGone = true
+//            adapter.submitList(viewModel.addNewPosts())
+//            binding.list.postDelayed(Runnable {
+//                binding.list.smoothScrollToPosition(0)
+//            }, 700)
+//
+//        }
 
 
         binding.fab.setOnClickListener {

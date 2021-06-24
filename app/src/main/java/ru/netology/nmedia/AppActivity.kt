@@ -15,6 +15,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.NewPostFragment.Companion.textArg
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.viewmodel.AuthViewModel
+import ru.netology.nmedia.viewmodel.PostViewModel
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -34,6 +35,8 @@ class AppActivity
     lateinit var firebaseInstallations: FirebaseInstallations
     @Inject
     lateinit var firebaseMessaging: FirebaseMessaging
+
+    private val postViewModel: PostViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -104,6 +107,7 @@ class AppActivity
             }
             R.id.signout -> {
                 auth.removeAuth()
+                postViewModel.refreshPosts()
                 Toast.makeText(this, "Выход", Toast.LENGTH_SHORT).show()
                 true
             }

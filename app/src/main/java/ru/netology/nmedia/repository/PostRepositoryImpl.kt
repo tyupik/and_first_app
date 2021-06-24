@@ -3,12 +3,16 @@ package ru.netology.nmedia.repository
 import android.net.Uri
 import androidx.core.net.toFile
 import androidx.core.net.toUri
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import ru.netology.nmedia.api.PostApiService
+import ru.netology.nmedia.api.ApiService
+import ru.netology.nmedia.api.PostPagingSource
 import ru.netology.nmedia.dao.PostDao
 import ru.netology.nmedia.dao.PostWorkDao
 import ru.netology.nmedia.dto.*
@@ -28,13 +32,16 @@ import javax.inject.Inject
 class PostRepositoryImpl @Inject constructor(
     private val dao: PostDao,
     private val postWorkDao: PostWorkDao,
-    private val service: PostApiService
+    private val service: ApiService
 ) : PostRepository {
 
 
-    override val data = dao.getAll()
-        .map(List<PostEntity>::toDto)
-        .flowOn(Dispatchers.Default)
+    override val data = Pager(
+        PagingConfig(
+            pageSize = 10
+        ),
+        pagingSourceFactory = { PostPagingSource(service) }
+    ).flow
 
     override fun getNewerCount(id: Long): Flow<Int> = flow {
         while (true) {

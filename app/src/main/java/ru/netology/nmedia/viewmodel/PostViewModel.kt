@@ -3,11 +3,15 @@ package ru.netology.nmedia.viewmodel
 import android.net.Uri
 import androidx.core.net.toFile
 import androidx.lifecycle.*
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import androidx.paging.map
 import androidx.work.*
 import com.google.firebase.installations.FirebaseInstallations
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
@@ -47,19 +51,14 @@ class PostViewModel @Inject constructor(
     auth: AppAuth
 ) : ViewModel() {
 
+    private val cached = repository.data.cachedIn(viewModelScope)
 
-    val data: LiveData<FeedModel> = auth
-        .authStateFlow
+    val data: Flow<PagingData<Post>> = auth.authStateFlow
         .flatMapLatest { (myId, _) ->
-            repository.data
-                .map { posts ->
-                    FeedModel(
-                        posts.map { it.copy(ownedByMe = it.authorId == myId) },
-                        posts.isEmpty()
-                    )
-                }
+            cached.map { posts ->
+                posts.map { it.copy(ownedByMe = it.authorId == myId) }
+            }
         }
-        .asLiveData(Dispatchers.Default)
 
     private val _dataState = MutableLiveData<FeedModelState>()
     val dataState: LiveData<FeedModelState>
@@ -81,13 +80,13 @@ class PostViewModel @Inject constructor(
         FirebaseInstallations.getInstance().getToken(true)
     }
 
-    val newerCount: LiveData<Int> = data.switchMap {
-        repository.getNewerCount(it.posts.firstOrNull()?.id ?: 0)
-            .catch { e ->
-                e.printStackTrace()
-            }
-            .asLiveData()
-    }
+//    val newerCount: LiveData<Int> = data.switchMap {
+//        repository.getNewerCount(it.posts.firstOrNull()?.id ?: 0)
+//            .catch { e ->
+//                e.printStackTrace()
+//            }
+//            .asLiveData()
+//    }
 
 
     fun loadPosts() = viewModelScope.launch {
