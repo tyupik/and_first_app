@@ -3,22 +3,24 @@ package ru.netology.nmedia.repository
 import android.net.Uri
 import androidx.core.net.toFile
 import androidx.core.net.toUri
+import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
-import androidx.paging.PagingSource
+import androidx.paging.map
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import ru.netology.nmedia.api.ApiService
-import ru.netology.nmedia.api.PostPagingSource
+import ru.netology.nmedia.api.PostRemoteMediator
 import ru.netology.nmedia.dao.PostDao
+import ru.netology.nmedia.dao.PostKeyDao
 import ru.netology.nmedia.dao.PostWorkDao
+import ru.netology.nmedia.db.AppDb
 import ru.netology.nmedia.dto.*
 import ru.netology.nmedia.entity.PostEntity
 import ru.netology.nmedia.entity.PostWorkEntity
-import ru.netology.nmedia.entity.toDto
 import ru.netology.nmedia.entity.toEntity
 import ru.netology.nmedia.enumiration.AttachmentType
 import ru.netology.nmedia.error.ApiError
@@ -32,16 +34,21 @@ import javax.inject.Inject
 class PostRepositoryImpl @Inject constructor(
     private val dao: PostDao,
     private val postWorkDao: PostWorkDao,
-    private val service: ApiService
+    private val service: ApiService,
+    db: AppDb,
+    postKeyDao: PostKeyDao
 ) : PostRepository {
 
 
+
+    @ExperimentalPagingApi
     override val data = Pager(
-        PagingConfig(
-            pageSize = 10
-        ),
-        pagingSourceFactory = { PostPagingSource(service) }
-    ).flow
+        remoteMediator = PostRemoteMediator(service, dao, db, postKeyDao),
+        config = PagingConfig(pageSize = 10),
+        pagingSourceFactory = dao::getPagingSource
+    ).flow.map {
+        it.map (PostEntity::toDto)
+    }
 
     override fun getNewerCount(id: Long): Flow<Int> = flow {
         while (true) {
@@ -123,7 +130,8 @@ class PostRepositoryImpl @Inject constructor(
 
     override suspend fun getAllAsync() {
         try {
-            val response = service.getAll()
+            //getLatest вместо getAll, чтобы не пытался загрузить сразу все посты с бэка
+            val response = service.getLatest(10)
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }

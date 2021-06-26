@@ -27,7 +27,7 @@ class AppActivity
 //    private val firebaseMessaging: FirebaseMessaging,
 ) : AppCompatActivity(R.layout.activity_main) {
     private val viewModel: AuthViewModel by viewModels()
-
+    private val postViewModel: PostViewModel by viewModels()
 
     @Inject
     lateinit var auth: AppAuth
@@ -36,7 +36,7 @@ class AppActivity
     @Inject
     lateinit var firebaseMessaging: FirebaseMessaging
 
-    private val postViewModel: PostViewModel by viewModels()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
