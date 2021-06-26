@@ -91,10 +91,11 @@ class FeedFragment : Fragment() {
 
         binding.list.adapter = adapter
 
-        binding.swipeRefresh.setOnRefreshListener {
-            viewModel.loadPosts()
-            swipe_refresh.isRefreshing = false
-        }
+//        binding.swipeRefresh.setOnRefreshListener {
+//            viewModel.loadPosts()
+//            swipe_refresh.isRefreshing = false
+//        }
+        binding.swipeRefresh.setOnRefreshListener(adapter::refresh)
 
         viewModel.dataState.observe(viewLifecycleOwner, { state ->
             binding.errorGroup.isVisible = false
