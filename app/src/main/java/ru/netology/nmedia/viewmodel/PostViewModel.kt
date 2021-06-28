@@ -5,6 +5,7 @@ import androidx.core.net.toFile
 import androidx.lifecycle.*
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import androidx.paging.insertSeparators
 import androidx.paging.map
 import androidx.work.*
 import com.google.firebase.installations.FirebaseInstallations
@@ -20,14 +21,13 @@ import ru.netology.nmedia.SingleLiveEvent
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.dto.MediaUpload
 import ru.netology.nmedia.dto.Post
-import ru.netology.nmedia.model.FeedModel
-import ru.netology.nmedia.model.FeedModelState
-import ru.netology.nmedia.model.PhotoModel
+import ru.netology.nmedia.model.*
 import ru.netology.nmedia.repository.PostRepository
 import ru.netology.nmedia.work.RemovePostWorker
 import ru.netology.nmedia.work.SavePostWorker
 import java.io.File
 import javax.inject.Inject
+import kotlin.random.Random
 
 private val defaultPost = Post(
     id = 0L,
@@ -53,10 +53,18 @@ class PostViewModel @Inject constructor(
 
     private val cached = repository.data.cachedIn(viewModelScope)
 
-    val data: Flow<PagingData<Post>> = auth.authStateFlow
+    val data: Flow<PagingData<FeedModel>> = auth.authStateFlow
         .flatMapLatest { (myId, _) ->
-            cached.map { posts ->
-                posts.map { it.copy(ownedByMe = it.authorId == myId) }
+            cached.map { pagingData ->
+                pagingData.map { post->
+                    PostModel(post.copy(ownedByMe = post.authorId == myId))
+                }.insertSeparators { post, _ ->
+                    if (post?.id?.rem(5) == 0L) {
+                        AdModel(Random.nextLong(), "figma.jpg")
+                    } else {
+                        null
+                    }
+                }
             }
         }
 

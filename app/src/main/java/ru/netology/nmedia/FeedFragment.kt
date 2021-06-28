@@ -12,15 +12,18 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
+import androidx.recyclerview.widget.DividerItemDecoration
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_feed.*
 import kotlinx.coroutines.flow.collectLatest
 import ru.netology.nmedia.NewPostFragment.Companion.textArg
+import ru.netology.nmedia.adapter.PagingLoadStateAdapter
 import ru.netology.nmedia.adapter.PostAdapter
 import ru.netology.nmedia.adapter.PostAdapterClickListener
 import ru.netology.nmedia.databinding.FragmentFeedBinding
 import ru.netology.nmedia.dto.Post
+import ru.netology.nmedia.model.AdModel
 import ru.netology.nmedia.viewmodel.PostViewModel
 
 @AndroidEntryPoint
@@ -41,6 +44,8 @@ class FeedFragment : Fragment() {
         )
         val adapter = PostAdapter(
             object : PostAdapterClickListener {
+                override fun onAdClicked(adModel: AdModel) {
+                }
 
                 override fun onAttachmentClicked(post: Post) {
                     findNavController().navigate(
@@ -89,13 +94,24 @@ class FeedFragment : Fragment() {
         )
 
 
-        binding.list.adapter = adapter
+
+
+        binding.list.adapter = adapter.withLoadStateHeaderAndFooter(
+            header = PagingLoadStateAdapter(adapter::retry),
+            footer = PagingLoadStateAdapter(adapter::retry)
+        )
+
+        binding.list.addItemDecoration(
+            DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
+        )
+
 
 //        binding.swipeRefresh.setOnRefreshListener {
 //            viewModel.loadPosts()
 //            swipe_refresh.isRefreshing = false
 //        }
         binding.swipeRefresh.setOnRefreshListener(adapter::refresh)
+
 
         viewModel.dataState.observe(viewLifecycleOwner, { state ->
             binding.errorGroup.isVisible = false
@@ -130,11 +146,13 @@ class FeedFragment : Fragment() {
 //            })
         }
 
+        //Refreshing остался только для refresh. Автоматический prepend отключен, при append progressbar снизу
         lifecycleScope.launchWhenCreated {
             adapter.loadStateFlow.collectLatest { states ->
-                binding.swipeRefresh.isRefreshing = states.append is LoadState.Loading
-                        || states.prepend is LoadState.Loading
-                        || states.refresh is LoadState.Loading
+                binding.swipeRefresh.isRefreshing =
+//                    states.append is LoadState.Loading ||
+//                    states.prepend is LoadState.Loading ||
+                    states.refresh is LoadState.Loading
             }
         }
 
